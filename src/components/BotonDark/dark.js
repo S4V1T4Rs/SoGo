@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-
+import PropTypes from 'prop-types';
 const ThemeSwitchContainer = styled.div`
   --toggle-size: 30px;
   --container-width: 5.625em;
@@ -28,7 +28,6 @@ const ThemeSwitchContainer = styled.div`
 
 const ThemeSwitchCheckbox = styled.input`
   display: none;
-  
 `;
 
 const CircleContainer = styled.div`
@@ -43,7 +42,6 @@ const CircleContainer = styled.div`
   display: flex;
   transition: var(--circle-transition);
   pointer-events: none;
-
 `;
 
 const SunMoonContainer = styled.div`
@@ -101,5 +99,8 @@ const ThemeSwitch = ({ darkMode, onToggleTheme }) => {
     </ThemeSwitchContainer>
   );
 };
-
+ThemeSwitch.propTypes = {
+  darkMode: PropTypes.bool.isRequired,
+  onToggleTheme: PropTypes.func.isRequired
+};
 export default ThemeSwitch;

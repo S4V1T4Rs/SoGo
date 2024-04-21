@@ -97,7 +97,8 @@ const NotificationSection = () => {
           mr: 3,
           [theme.breakpoints.down('md')]: {
             mr: 2
-          }, background: customization.darkMode ? '#373737' : 'white'
+          },
+          background: customization.darkMode ? '#373737' : 'white'
         }}
       >
         <ButtonBase sx={{ borderRadius: '12px' }}>

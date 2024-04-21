@@ -31,7 +31,7 @@ export const Title = ({ titulo }) => {
             borderColor: `${theme.palette.grey[400]} !important`,
             color: `${theme.palette.grey[500]} !important`,
             fontWeight: 500,
-            borderRadius: `${customization.borderRadius}px`,
+            borderRadius: `${customization.borderRadius}px`
           }}
           disableRipple
           disabled

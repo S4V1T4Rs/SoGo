@@ -5,6 +5,7 @@ import Loadable from 'ui-component/Loadable';
 import MainLayout from 'layout/MainLayout';
 
 // login option 3 routing
+const IpDect = Loadable(lazy(() => import('components/IP/DetectorIp')));
 const FormCall = Loadable(lazy(() => import('views/pages/CallPages/FormCall/FormCallDocs')));
 const TaxData = Loadable(lazy(() => import('views/pages/TaxData/TaxDatas')));
 // const FormHire = Loadable(lazy(() => import('views/pages/Rol/rol')));
@@ -33,7 +34,7 @@ const AuthenticationRoutes = {
     },
     {
       path: '/config/crear-tienda',
-      element: <FormCall />
+      element: <IpDect />
     }
     // {
     //   path: '/users/hire',
