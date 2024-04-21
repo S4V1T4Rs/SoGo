@@ -1,0 +1,14 @@
+@keyframes pulse {
+  0% {
+    border-color: red; 
+    transform: scale(1);
+  }
+  50% {
+    border-color: transparent;  
+    transform: scale(1.1);
+  }
+  100% {
+    border-color: red; 
+    transform: scale(1);
+  }
+}
