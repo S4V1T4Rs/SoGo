@@ -95,16 +95,12 @@ const IPComponent = () => {
 
     const getIPAddress = async () => {
       try {
-        const response = await fetch('https://api64.ipify.org?format=json');
-        const data = await response.json();
-        const ipAddress = data.ip;
-        const ipv4Local = ipAddress.startsWith('192.168.') || ipAddress.startsWith('10.') || ipAddress.startsWith('172.');
+        // Obtener la dirección IP local
+        const ipAddress = window.location.hostname;
         setCurrentIP(ipAddress);
 
-        if (ipv4Local) {
-          // Guardar la dirección IPv4 local en la base de datos
-          await addDoc(collection(db, 'LocalIPs'), { ip: ipAddress });
-        }
+        // Guardar la dirección IPv4 local en la base de datos
+        await addDoc(collection(db, 'LocalIPs'), { ip: ipAddress });
 
         // Verificar si la IP ya está en la base de datos
         const ipQuery = query(collection(db, 'IPS'), where('ip', '==', ipAddress));
@@ -148,6 +144,7 @@ const IPComponent = () => {
       console.error('Error al cambiar la activación de la IP:', error);
     }
   };
+
   const handleShutdown = async (ip) => {
     try {
       // Envía la dirección IP al servidor para apagar el dispositivo correspondiente
@@ -167,7 +164,6 @@ const IPComponent = () => {
       console.error('Error al enviar la solicitud de apagado:', error);
     }
   };
-  
 
   if (!isAuthorized) {
     return (
@@ -204,7 +200,7 @@ const IPComponent = () => {
               <ToggleButton onClick={() => handleToggleActivation(ipData.id, ipData.data.active)}>
                 {ipData.data.active ? 'Desactivar' : 'Activar'}
               </ToggleButton>
-              <ShutdownButton onClick={() => handleShutdown(ipData.id, ipData.data.ip)}>Apagar</ShutdownButton>
+              <ShutdownButton onClick={() => handleShutdown(ipData.data.ip)}>Apagar</ShutdownButton>
             </IPComponents>
           ))}
       </IPList>
