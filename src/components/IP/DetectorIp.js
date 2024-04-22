@@ -63,6 +63,20 @@ const ToggleButton = styled.button`
   }
 `;
 
+const ShutdownButton = styled.button`
+  padding: 8px 16px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  background-color: #f44336;
+  color: white;
+  transition: background-color 0.3s ease;
+
+  &:hover {
+    background-color: #d32f2f;
+  }
+`;
+
 const IPComponent = () => {
   const [currentIP, setCurrentIP] = useState(null);
   const [ips, setIps] = useState([]);
@@ -134,6 +148,26 @@ const IPComponent = () => {
       console.error('Error al cambiar la activación de la IP:', error);
     }
   };
+  const handleShutdown = async (ip) => {
+    try {
+      // Envía la dirección IP al servidor para apagar el dispositivo correspondiente
+      const response = await fetch(`http://localhost:8080/api/shutdown`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ ip })
+      });
+      if (response.ok) {
+        console.log('La solicitud de apagado fue exitosa');
+      } else {
+        console.error('Error en la solicitud de apagado:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error al enviar la solicitud de apagado:', error);
+    }
+  };
+  
 
   if (!isAuthorized) {
     return (
@@ -170,6 +204,7 @@ const IPComponent = () => {
               <ToggleButton onClick={() => handleToggleActivation(ipData.id, ipData.data.active)}>
                 {ipData.data.active ? 'Desactivar' : 'Activar'}
               </ToggleButton>
+              <ShutdownButton onClick={() => handleShutdown(ipData.id, ipData.data.ip)}>Apagar</ShutdownButton>
             </IPComponents>
           ))}
       </IPList>
