@@ -63,20 +63,6 @@ const ToggleButton = styled.button`
   }
 `;
 
-const ShutdownButton = styled.button`
-  padding: 8px 16px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  background-color: #f44336;
-  color: white;
-  transition: background-color 0.3s ease;
-
-  &:hover {
-    background-color: #d32f2f;
-  }
-`;
-
 const IPComponent = () => {
   const [currentIP, setCurrentIP] = useState(null);
   const [ips, setIps] = useState([]);
@@ -95,12 +81,16 @@ const IPComponent = () => {
 
     const getIPAddress = async () => {
       try {
-        // Obtener la dirección IP local
-        const ipAddress = window.location.hostname;
+        const response = await fetch('https://api64.ipify.org?format=json');
+        const data = await response.json();
+        const ipAddress = data.ip;
+        const ipv4Local = ipAddress.startsWith('192.168.') || ipAddress.startsWith('10.') || ipAddress.startsWith('172.');
         setCurrentIP(ipAddress);
 
-        // Guardar la dirección IPv4 local en la base de datos
-        await addDoc(collection(db, 'LocalIPs'), { ip: ipAddress });
+        if (ipv4Local) {
+          // Guardar la dirección IPv4 local en la base de datos
+          await addDoc(collection(db, 'LocalIPs'), { ip: ipAddress });
+        }
 
         // Verificar si la IP ya está en la base de datos
         const ipQuery = query(collection(db, 'IPS'), where('ip', '==', ipAddress));
@@ -113,7 +103,6 @@ const IPComponent = () => {
           // Incrementar el contador de acceso
           await updateDoc(doc(db, 'IPS', existingIP.id), { accessCount: existingIP.data().accessCount + 1 });
         }
-
         // if (!existingIP) {
         //   await addDoc(collection(db, 'IPS'), { ip: ipAddress, active: true, deviceType: isMobile ? 'mobile' : 'pc' });
         // } else {
@@ -153,26 +142,6 @@ const IPComponent = () => {
     }
   };
 
-  const handleShutdown = async (ip) => {
-    try {
-      // Envía la dirección IP al servidor para apagar el dispositivo correspondiente
-      const response = await fetch(`http://localhost:8080/api/shutdown`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ ip })
-      });
-      if (response.ok) {
-        console.log('La solicitud de apagado fue exitosa');
-      } else {
-        console.error('Error en la solicitud de apagado:', response.statusText);
-      }
-    } catch (error) {
-      console.error('Error al enviar la solicitud de apagado:', error);
-    }
-  };
-
   if (!isAuthorized) {
     return (
       <IPContainer>
@@ -202,14 +171,13 @@ const IPComponent = () => {
             <IPComponents key={ipData.id}>
               <div>IP: {ipData.data.ip}</div>
               <div>Activa: {ipData.data.active ? 'Sí' : 'No'}</div>
-              <div>Cantidad de Vista: {ipData.data.accessCount}</div>
+              <div>Cantidad de visitas: {ipData.data.accessCount}</div>
               <div>Latitud: {ipData.data.latitude}</div>
               <div>Longitud: {ipData.data.longitude}</div>
               <DeviceIcon>{ipData.data.deviceType === 'mobile' ? '📱' : '💻'}</DeviceIcon>
               <ToggleButton onClick={() => handleToggleActivation(ipData.id, ipData.data.active)}>
                 {ipData.data.active ? 'Desactivar' : 'Activar'}
               </ToggleButton>
-              <ShutdownButton onClick={() => handleShutdown(ipData.data.ip)}>Apagar</ShutdownButton>
             </IPComponents>
           ))}
       </IPList>
