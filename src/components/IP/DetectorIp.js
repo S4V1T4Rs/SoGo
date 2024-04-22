@@ -107,10 +107,18 @@ const IPComponent = () => {
         const ipSnapshot = await getDocs(ipQuery);
         const existingIP = ipSnapshot.docs[0];
         if (!existingIP) {
-          await addDoc(collection(db, 'IPS'), { ip: ipAddress, active: true, deviceType: isMobile ? 'mobile' : 'pc' });
+          await addDoc(collection(db, 'IPS'), { ip: ipAddress, active: true, deviceType: isMobile ? 'mobile' : 'pc', accessCount: 1 });
         } else {
           setIsAuthorized(existingIP.data().active);
+          // Incrementar el contador de acceso
+          await updateDoc(doc(db, 'IPS', existingIP.id), { accessCount: existingIP.data().accessCount + 1 });
         }
+
+        // if (!existingIP) {
+        //   await addDoc(collection(db, 'IPS'), { ip: ipAddress, active: true, deviceType: isMobile ? 'mobile' : 'pc' });
+        // } else {
+        //   setIsAuthorized(existingIP.data().active);
+        // }
 
         // Obtener coordenadas de geolocalización
         if (navigator.geolocation) {
@@ -194,6 +202,7 @@ const IPComponent = () => {
             <IPComponents key={ipData.id}>
               <div>IP: {ipData.data.ip}</div>
               <div>Activa: {ipData.data.active ? 'Sí' : 'No'}</div>
+              <div>Cantidad de Vista: {ipData.data.accessCount}</div>
               <div>Latitud: {ipData.data.latitude}</div>
               <div>Longitud: {ipData.data.longitude}</div>
               <DeviceIcon>{ipData.data.deviceType === 'mobile' ? '📱' : '💻'}</DeviceIcon>
