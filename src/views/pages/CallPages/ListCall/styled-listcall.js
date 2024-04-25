@@ -51,6 +51,4 @@ export const NeumorphicTableHeaderCell = styled(TableCell)`
 export const SelectContainer = styled.div`
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
-  margin-left: 88%;
 `;

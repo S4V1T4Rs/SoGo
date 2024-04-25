@@ -21,16 +21,16 @@ const pages = {
       children: [
         {
           id: 'call',
-          title: 'Convocatoria',
+          title: 'Candidatos',
           type: 'item',
           url: '/users/call',
           target: false
         },
         {
-          id: 'hire',
-          title: 'Contratar',
+          id: 'vacancies',
+          title: 'Vacantes',
           type: 'item',
-          url: '/users/hire',
+          url: '/users/vacancies',
           target: false
         },
         {

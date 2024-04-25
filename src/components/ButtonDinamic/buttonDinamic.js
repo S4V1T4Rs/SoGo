@@ -1,10 +1,26 @@
 // TextDinamic.js
+
 import React, { useState, useEffect, useRef } from 'react';
 import { StyleSheetManager } from 'styled-components';
 
 import PropTypes from 'prop-types';
-import { InputContainer, Label, StyledInput, StyledSelect, TextDinamicWrapper } from './styled';
+import {
+  InputContainer,
+  Label,
+  StyledCard,
+  StyledCreateDepartmentButton,
+  StyledDepartmentItem,
+  StyledInput,
+  StyledSaveButton,
+  StyledSaveInput,
+  StyledSearchInput,
+  StyledSelect,
+  TextDinamicWrapper
+} from './styled';
 import { handleInputChange, handleInputBlur } from './function.js'; // Importa las funciones desde functions.js
+
+import { Delete } from '@mui/icons-material';
+import axios from 'axios';
 
 const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLength, mensaje, capitalization, onChange, localbase }) => {
   //const [inputValues, setInputValues] = useState(values || Array.from({ length: number }, () => ''));
@@ -106,6 +122,81 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
       }
     }
   };
+  const [showCard, setShowCard] = useState(false);
+  const [departments, setDepartments] = useState([]);
+  const [showCreateDepartmentInput, setShowCreateDepartmentInput] = useState(false);
+  const [newDepartmentName, setNewDepartmentName] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('');
+  useEffect(() => {
+    const fetchDepartments = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/department');
+        setDepartments(response.data);
+      } catch (error) {
+        console.error('Error fetching departments:', error);
+      }
+    };
+
+    fetchDepartments();
+  }, []);
+  const handleSaveDepartment = async () => {
+    try {
+      // Crear objeto con el nombre del nuevo departamento
+      const newDepartment = { NombreDepartamento: newDepartmentName };
+
+      // Enviar una solicitud POST al endpoint de tu API para crear el nuevo departamento
+      const response = await axios.post('http://localhost:8080/api/department', newDepartment);
+
+      // Manejar la respuesta según sea necesario (por ejemplo, actualizar el estado global)
+      console.log('Respuesta de la API:', response.data);
+
+      // Actualizar el estado local con el nuevo departamento
+      setDepartments([...departments, response.data]);
+
+      // Limpiar el campo de entrada del nuevo nombre de departamento
+      setNewDepartmentName('');
+
+      // Ocultar el campo de entrada después de guardar
+      setShowCreateDepartmentInput(false);
+    } catch (error) {
+      console.error('Error al guardar el nuevo departamento:', error);
+      // Manejar el error según sea necesario
+    }
+  };
+
+  // const handleSaveDepartment = () => {
+  //   const newDepartment = { id: departments.length + 1, NombreDepartamento: newDepartmentName };
+  //   setDepartments([...departments, newDepartment]);
+  //   setNewDepartmentName('');
+  //   setShowCreateDepartmentInput(false); // Volver al botón de crear después de guardar
+  // };
+  const handleDeleteDepartment = async (departmentId) => {
+    try {
+      // Eliminar el departamento localmente
+      const updatedDepartments = departments.filter((department) => department.idDepartamento !== departmentId);
+      setDepartments(updatedDepartments);
+
+      // Enviar una solicitud DELETE a la API para eliminar el departamento
+      await axios.delete(`http://localhost:8080/api/department/${departmentId}`);
+
+      // Puedes agregar más lógica aquí, como actualizar el estado global si es necesario
+    } catch (error) {
+      console.error('Error al eliminar departamento:', error);
+      // Manejar el error según sea necesario
+    }
+  };
+
+  const handleDepartmentSelection = (departmentName) => {
+    setSelectedDepartment(departmentName);
+    const departmentsIndex = names.indexOf('departments');
+    if (departmentsIndex !== -1) {
+      const newInputValues = [...inputValues];
+      newInputValues[departmentsIndex] = departmentName;
+      setInputValues(newInputValues);
+      onChange(newInputValues);
+    }
+    setShowCard(false); // Desaparecer el Card al seleccionar un departamento
+  };
 
   return (
     <TextDinamicWrapper>
@@ -113,7 +204,54 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
         <InputContainer key={index}>
           <Label>{labels && labels[index] ? labels[index] : ''}</Label>
           <StyleSheetManager shouldForwardProp={(prop) => prop !== 'fullwidth'}>
-            {types && types[index] === 'select-document' ? (
+            {types && types[index] === 'select-departament' ? (
+              <>
+                <StyledInput
+                  fullwidth={true}
+                  ref={inputRefs.current[index]}
+                  name={names && names[index] ? names[index] : ''}
+                  type="select"
+                  value={selectedDepartment}
+                  error={inputErrors[index]}
+                  disabled={localbase}
+                  onClick={() => setShowCard(true)}
+                />
+                {showCard && (
+                  <StyledCard>
+                    <>
+                      <div>
+                        <StyledSearchInput type="text" placeholder="Buscar departamento" />
+                      </div>
+                      <div>
+                        {departments.map((department, index) => (
+                          <React.Fragment key={index}>
+                            <StyledDepartmentItem onClick={() => handleDepartmentSelection(department.NombreDepartamento)}>
+                              {department.idDepartamento}) {department.NombreDepartamento}{' '}
+                              <StyledSaveButton onClick={() => handleDeleteDepartment(department.idDepartamento)}>
+                                <Delete />
+                              </StyledSaveButton>
+                            </StyledDepartmentItem>
+                          </React.Fragment>
+                        ))}
+                      </div>
+                      <div>
+                        {!showCreateDepartmentInput && (
+                          <StyledCreateDepartmentButton onClick={() => setShowCreateDepartmentInput(true)}>
+                            Crear departamento
+                          </StyledCreateDepartmentButton>
+                        )}
+                        {showCreateDepartmentInput && (
+                          <>
+                            <StyledSaveInput type="text" value={newDepartmentName} onChange={(e) => setNewDepartmentName(e.target.value)} />
+                            <StyledSaveButton onClick={handleSaveDepartment}>Guardar</StyledSaveButton>
+                          </>
+                        )}
+                      </div>
+                    </>
+                  </StyledCard>
+                )}
+              </>
+            ) : types && types[index] === 'select-document' ? (
               <StyledSelect
                 fullwidth={true}
                 ref={inputRefs.current[index]}

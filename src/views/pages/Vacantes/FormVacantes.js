@@ -1,3 +1,4 @@
+//Vacantes.js
 import React, { useEffect, useState } from 'react';
 import { Title } from 'components/titulo';
 import axios from 'axios';
@@ -9,24 +10,23 @@ import user from 'assets/images/icons/man.png';
 import table from 'assets/images/icons/table.png';
 import ButtonSave from 'components/ButtonSave/ButtonSave';
 import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'components/Tab/styled';
-import { labelsLaboral, labelsPersonal, namesLaboral, namesPersonal, typesLaboral, typesPersonal } from './variables';
-import { calculateAge } from './validaciones';
+import { labelsVacancies, namesVacancies, typesVacancies } from './variables';
+// import { calculateAge } from './validaciones';
 // import axios from 'axios';
-import { isPersonalFormFilled, isLaboralFormFilled } from './validarTabs';
-import UserTable from '../ListCall/listCall';
+// import { isPersonalFormFilled, isLaboralFormFilled } from './validarTabs';
+// import UserTable from '../ListCall/listCall';
 import { createUsuario } from 'api/Controller/fireController';
 import { Conecction } from 'components/ButtonDB/ButtonConection';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from 'api/config/configfire';
 import { useSelector } from 'react-redux';
+import { isPersonalFormFilled } from '../CallPages/FormCall/validarTabs';
+import { TableVacancie } from './xd';
 
-const FormCall = () => {
+const Vancancies = () => {
   const customization = useSelector((state) => state.customization);
-  const [activeTab, setActiveTab] = useState('personal');
-  const [personalFormValues, setPersonalFormValues] = useState({});
-  const [laboralFormValues, setLaboralFormValues] = useState({});
-  //const [age] = useState('');
-  // const [isLocalDatabaseActive, setLocalDatabaseActive] = useState(false);
+  const [activeTab, setActiveTab] = useState('vacancies');
+  const [vacanciesFormValues, setVacanciesFormValues] = useState({});
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
@@ -40,7 +40,7 @@ const FormCall = () => {
     const checkServerStatus = async () => {
       try {
         // Realiza una petición al servidor para verificar si está activo
-        const response = await axios.get('http://localhost:8080/api/call');
+        const response = await axios.get('http://localhost:8080/api/vacancie');
         if (response.status === 200) {
           // Si el servidor responde correctamente, lo marcamos como activo
           setServerActive(true);
@@ -64,10 +64,7 @@ const FormCall = () => {
 
   useEffect(() => {
     // Verificar si todos los campos están llenos
-    if (
-      isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6']) &&
-      isLaboralFormFilled(laboralFormValues, ['0', '1', '2', '3'])
-    ) {
+    if (isPersonalFormFilled(vacanciesFormValues, ['0', '2', '3'])) {
       // Si todos los campos están llenos, limpiar el mensaje
       setMessage('');
       setMessageType('');
@@ -75,7 +72,7 @@ const FormCall = () => {
     } else {
       setAllFieldsFilled(false);
     }
-  }, [personalFormValues, laboralFormValues]);
+  }, [vacanciesFormValues]);
 
   useEffect(() => {
     const onlineHandler = () => {
@@ -142,46 +139,29 @@ const FormCall = () => {
   const handleSubmit = async () => {
     try {
       // Referencia a la colección 'usuarios'
-      const usuariosRef = collection(db, 'usuarios');
+      const vacanciesRef = collection(db, 'Vacancie');
       // Comprobación de valores personalFormValues y laboralFormValues
-      if (!personalFormValues || !laboralFormValues) {
+      if (!vacanciesFormValues) {
         console.error('Los valores personalFormValues o laboralFormValues son undefined.');
         return;
       }
 
-      const age = calculateAge(personalFormValues['4']);
-      const personalData = {
-        Nombre: personalFormValues['0'] || '',
-        Apellido: personalFormValues['1'] || '',
-        TipoDocumento: personalFormValues['2'] || '',
-        NumeroDocumento: personalFormValues['3'] || '',
-        FechaNacimiento: personalFormValues['4'] || '',
-        Género: personalFormValues['5'] || '',
-        Edad: age.toString()
-      };
-      const laboralData = {
-        Empresa: laboralFormValues['0'] || '',
-        Cargo: laboralFormValues['1'] || '',
-        InicioTrabajo: laboralFormValues['2'] || '',
-        Salario: laboralFormValues['3'] || ''
+      // const age = calculateAge(personalFormValues['4']);
+      const vacanciesData = {
+        NombreVacante: vacanciesFormValues['0'] || '',
+        Departamento: vacanciesFormValues['1'] || '',
+        TipoJornada: vacanciesFormValues['2'] || '',
+        Descripcion: vacanciesFormValues['3'] || ''
       };
 
       // Si hay conexión a internet, guardar los datos en Firestore y en tu API
       if (isOnline) {
-        await createUsuario(
-          { ...personalData, ...laboralData },
-          setPersonalFormValues,
-          setLaboralFormValues,
-          setMessage,
-          setMessageType,
-          allFieldsFilled
-        );
+        await createUsuario({ ...vacanciesData }, setVacanciesFormValues, setMessage, setMessageType, allFieldsFilled);
       } else {
         // Verificar si el DNI ya está en uso
         // Si no hay conexión a internet, guardar los datos solo en tu API
-        const apiResponse = await axios.post('http://localhost:8080/api/call', {
-          ...personalData,
-          ...laboralData
+        const apiResponse = await axios.post('http://localhost:8080/api/vacancie', {
+          ...vacanciesData
         });
 
         // Manejar la respuesta de la API según sea necesario
@@ -192,18 +172,16 @@ const FormCall = () => {
           setMessage('');
           setMessageType('');
         }, 8000);
-        setPersonalFormValues({});
-        setLaboralFormValues({});
+        setVacanciesFormValues({});
         const apiData = apiResponse.data;
         // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
 
         // Obtener el ID generado por la API
         const nextId = apiData.idCall;
         // Guardar el documento en Firestore
-        await setDoc(doc(usuariosRef, nextId.toString()), {
+        await setDoc(doc(vacanciesRef, nextId.toString()), {
           id: nextId.toString(),
-          'Datos Personales': personalData,
-          'Datos Laborales': laboralData
+          'Datos Personales': vacanciesData
         });
       }
 
@@ -235,10 +213,10 @@ const FormCall = () => {
           setMessageType('');
         }, 20000);
       }
-      setPersonalFormValues((prevValues) => ({
-        ...prevValues,
-        3: '' // Limpiar el valor del campo del número de documento
-      }));
+      // setPersonalFormValues((prevValues) => ({
+      //   ...prevValues,
+      //   3: '' // Limpiar el valor del campo del número de documento
+      // }));
       // Manejar el error según sea necesario
     }
   };
@@ -257,12 +235,12 @@ const FormCall = () => {
           </>
         )} */}
             <Tabs
-              $active={activeTab === 'personal'}
+              $active={activeTab === 'vacancies'}
               $darkMode={customization.darkMode}
-              onClick={() => setActiveTab('personal')}
+              onClick={() => setActiveTab('vacancies')}
               style={{
                 borderRadius: `${customization.borderRadius}px`,
-                backgroundColor: isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6'])
+                backgroundColor: isPersonalFormFilled(vacanciesFormValues, ['0', '1', '2', '3'])
                   ? customization.darkMode
                     ? '#112d15' // Modo oscuro: verde oscuro
                     : '#a4eeb9' // Modo claro: verde claro
@@ -270,23 +248,7 @@ const FormCall = () => {
               }}
             >
               <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels $darkMode={customization.darkMode}>Personal</Labels>
-            </Tabs>
-            <Tabs
-              $active={activeTab === 'laboral'}
-              $darkMode={customization.darkMode}
-              onClick={() => setActiveTab('laboral')}
-              style={{
-                borderRadius: `${customization.borderRadius}px`,
-                backgroundColor: isLaboralFormFilled(laboralFormValues, ['0', '1', '2', '3'])
-                  ? customization.darkMode
-                    ? '#112d15' // Modo oscuro: verde oscuro
-                    : '#a4eeb9' // Modo claro: verde claro
-                  : 'initial'
-              }}
-            >
-              <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels $darkMode={customization.darkMode}>Laboral</Labels>
+              <Labels $darkMode={customization.darkMode}>Vacantes</Labels>
             </Tabs>
             <Tabs
               $active={activeTab === 'table'}
@@ -309,7 +271,7 @@ const FormCall = () => {
             </Grid>
           )}
           <Grid container justifyContent="center" alignItems="center" marginBottom={'10px'}>
-            {activeTab === 'laboral' ? (
+            {activeTab === 'vacancies' ? (
               <>
                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '16px' }}>
                   <ButtonSave onClick={handleSubmit}>Guardar</ButtonSave>
@@ -352,23 +314,23 @@ const FormCall = () => {
               //</Grid>
             )}
             {activeTab === 'defecto' && <></>}
-            {activeTab === 'personal' && (
+            {activeTab === 'vacancies' && (
               <>
                 <Title titulo="Información personal" />
                 <TextDinamic
-                  number={7}
-                  labels={labelsPersonal}
-                  names={namesPersonal}
-                  types={typesPersonal}
-                  values={Object.values(personalFormValues)}
+                  number={4}
+                  labels={labelsVacancies}
+                  names={namesVacancies}
+                  types={typesVacancies}
+                  values={Object.values(vacanciesFormValues)}
                   // values={Object.values(personalFormValues || formData.Nombre, formData.Apellido, formData.TipoDocumento, formData.NumeroDocumento, formData.FechaNacimiento, formData.Género, formData.Edad)}
                   capitalization="primera"
                   onChange={(newValues) => {
-                    const age = calculateAge(newValues['4']); // Calcular la edad usando la nueva fecha de nacimiento
-                    setPersonalFormValues((prevValues) => ({
+                    // const age = calculateAge(newValues['4']); // Calcular la edad usando la nueva fecha de nacimiento
+                    setVacanciesFormValues((prevValues) => ({
                       ...prevValues,
-                      ...newValues,
-                      6: age !== undefined ? age.toString() : prevValues['4'] // Almacenar la edad en el índice 6
+                      ...newValues
+                      // 6: age !== undefined ? age.toString() : prevValues['4'] // Almacenar la edad en el índice 6
                     }));
                     // setFormData({ ...formData, newValues });
                   }}
@@ -376,29 +338,13 @@ const FormCall = () => {
                 />
               </>
             )}
-            {activeTab === 'laboral' && (
-              <>
-                <Title titulo="Información Laboral" />
-                <TextDinamic
-                  number={4}
-                  labels={labelsLaboral}
-                  names={namesLaboral}
-                  types={typesLaboral}
-                  values={Object.values(laboralFormValues)}
-                  // values={Object.values(laboralFormValues || formData.Empresa, formData.Cargo, formData.InicioTrabajo, formData.Salario)}
-                  capitalization="primera"
-                  onChange={(newValues) => {
-                    setLaboralFormValues({ ...laboralFormValues, ...newValues });
-                    // setFormData({ ...formData, newValues });
-                  }}
-                  localbase={(!isOnline && !isLocalDatabaseActive) || !serverActive}
-                />
-              </>
-            )}
+
             {activeTab === 'table' && (
               <>
                 <Grid item xs={12} md={12}>
-                  <UserTable />
+                  <>
+                    <TableVacancie />
+                  </>
                 </Grid>
               </>
             )}
@@ -413,4 +359,4 @@ const FormCall = () => {
   );
 };
 
-export default FormCall;
+export default Vancancies;

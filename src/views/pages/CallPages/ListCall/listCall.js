@@ -11,7 +11,8 @@ import {
   TableBody,
   TableRow,
   CardContent,
-  Card
+  Card,
+  Typography
 } from '@mui/material';
 import { Delete, Edit, Save } from '@mui/icons-material';
 
@@ -213,201 +214,223 @@ const UserTable = () => {
         </>
       ) : (
         <>
-          <SelectContainer>
-            <Select value={selectedType} onChange={handleTypeChange}>
-              <MenuItem value="Personales">Personal</MenuItem>
-              <MenuItem value="Laborales">Laboral</MenuItem>
-            </Select>
-          </SelectContainer>
-          <TableContainer component={Grid} item xs={12} justifyContent="center">
-            <Table>
-              <TableHead>
-                {selectedType === 'Personales' && (
-                  <TableRow>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['id'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('id', e.pageX, e.pageY)}
-                    >
-                      ID
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Nombre'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Nombre', e.pageX, e.pageY)}
-                    >
-                      Nombre
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Apellido'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Apellido', e.pageX, e.pageY)}
-                    >
-                      Apellido
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Edad'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Edad', e.pageX, e.pageY)}
-                    >
-                      Edad
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['TipoDocumento'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('TipoDocumento', e.pageX, e.pageY)}
-                    >
-                      Tipo de Documento
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['NumeroDocumento'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('NumeroDocumento', e.pageX, e.pageY)}
-                    >
-                      Número de Documento
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Acciones'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Acciones', e.pageX, e.pageY)}
-                    >
-                      Acciones
-                    </NeumorphicTableHeaderCell>
-                  </TableRow>
-                )}
-                {selectedType === 'Laborales' && (
-                  <TableRow>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['id'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('id', e.pageX, e.pageY)}
-                    >
-                      ID
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Cargo'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Cargo', e.pageX, e.pageY)}
-                    >
-                      Cargo
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Empresa'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Empresa', e.pageX, e.pageY)}
-                    >
-                      Empresa
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['InicioTrabajo'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('InicioTrabajo', e.pageX, e.pageY)}
-                    >
-                      Inicio de Trabajo
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Salario'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Salario', e.pageX, e.pageY)}
-                    >
-                      Salario
-                    </NeumorphicTableHeaderCell>
-                    <NeumorphicTableHeaderCell
-                      style={{ width: columnWidths['Acciones'] }}
-                      onMouseDown={(e) => handleColumnResizeStart('Acciones', e.pageX, e.pageY)}
-                    >
-                      Acciones
-                    </NeumorphicTableHeaderCell>
-                  </TableRow>
-                )}
-              </TableHead>
-              <TableBody onMouseMove={handleColumnResize} onMouseUp={handleColumnResizeStop}>
-                {serverError ? (
-                  <TableRow>
-                    <NeumorphicTableCell colSpan={12}>
-                      <Card variant="outlined" style={{ margin: 'auto', maxWidth: 400 }}>
-                        <CardContent style={{ backgroundColor: 'rgba(0, 0, 0, 0.04)' }}>
-                          <p style={{ textAlign: 'center', color: 'red', fontSize: '20px' }}>El servidor se encuentra apagado</p>
-                        </CardContent>
-                      </Card>
-                    </NeumorphicTableCell>
-                  </TableRow>
-                ) : (
-                  <>
-                    {users.map((user, index) => (
-                      <TableRow key={index}>
-                        {selectedType === 'Personales' && (
-                          <>
-                            <NeumorphicTableCell>{user.id}</NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Personales']?.Nombre || user['Datos Personales'].Nombre}
-                                onChange={(e) => handleInputChange(e, 'Nombre', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Personales']?.Apellido || user['Datos Personales'].Apellido}
-                                onChange={(e) => handleInputChange(e, 'Apellido', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Personales']?.Edad || user['Datos Personales'].Edad}
-                                onChange={(e) => handleInputChange(e, 'Edad', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                            <NeumorphicTableCell>{user['Datos Personales']?.TipoDocumento}</NeumorphicTableCell>
-                            <NeumorphicTableCell>{user['Datos Personales']?.NumeroDocumento}</NeumorphicTableCell>
-                          </>
-                        )}
-                        {selectedType === 'Laborales' && (
-                          <>
-                            <NeumorphicTableCell>{user.id}</NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Laborales']?.Cargo || user['Datos Laborales'].Cargo}
-                                onChange={(e) => handleInputChange(e, 'Cargo', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Laborales']?.Empresa || user['Datos Laborales'].Empresa}
-                                onChange={(e) => handleInputChange(e, 'Empresa', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Laborales']?.InicioTrabajo || user['Datos Laborales'].InicioTrabajo}
-                                onChange={(e) => handleInputChange(e, 'InicioTrabajo', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                            <NeumorphicTableCell>
-                              <TextField
-                                value={pendingChanges[user.id]?.['Datos Laborales']?.Salario || user['Datos Laborales'].Salario}
-                                onChange={(e) => handleInputChange(e, 'Salario', user.id)}
-                                disabled={currentIndex !== user.id}
-                              />
-                            </NeumorphicTableCell>
-                          </>
-                        )}
-                        <NeumorphicTableCell>
-                          <ActionContainer>
-                            {currentIndex !== user.id ? (
-                              <EditButton onClick={() => handleEditButtonClick(user.id)}>
-                                <Edit style={{ color: '#d17308' }} />
-                              </EditButton>
-                            ) : (
-                              <NeumorphicButton onClick={() => handleSaveButtonClick(user.id)}>
-                                <Save />
-                              </NeumorphicButton>
-                            )}
-                            <DeleteButton onClick={() => handleDeleteButtonClick(user.id)}>
-                              <Delete style={{ color: '#a84343' }} />
-                            </DeleteButton>
-                          </ActionContainer>
-                        </NeumorphicTableCell>
-                      </TableRow>
-                    ))}
-                  </>
-                )}
-              </TableBody>
-            </Table>
-          </TableContainer>
+          <Grid
+            container
+            xs={12}
+            md={10}
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center', // Espacio entre los elementos
+              padding: '10px' // Añade un poco de espacio alrededor de los elementos
+            }}
+          >
+            <Grid item xs={11} sx={{ textAlign: 'center' }}>
+              <Typography sx={{ fontSize: '30px' }}>Lista de Candidatos</Typography>
+            </Grid>
+            <Grid item xs={1} sx={{ display: 'flex', justifyContent: 'center' }}>
+              <SelectContainer>
+                <Select value={selectedType} onChange={handleTypeChange}>
+                  <MenuItem value="Personales">Personal</MenuItem>
+                  <MenuItem value="Laborales">Laboral</MenuItem>
+                </Select>
+              </SelectContainer>
+            </Grid>
+          </Grid>
+
+          <Grid item xs={12} md={10} sx={{ backgroundColor: 'green', textAlign: 'center', alignContent: 'center' }}>
+            <TableContainer component={Grid} item xs={12} justifyContent="center">
+              <Table>
+                <TableHead>
+                  {selectedType === 'Personales' && (
+                    <TableRow>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['id'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('id', e.pageX, e.pageY)}
+                      >
+                        ID
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Nombre'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Nombre', e.pageX, e.pageY)}
+                      >
+                        Nombre
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Apellido'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Apellido', e.pageX, e.pageY)}
+                      >
+                        Apellido
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Edad'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Edad', e.pageX, e.pageY)}
+                      >
+                        Edad
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['TipoDocumento'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('TipoDocumento', e.pageX, e.pageY)}
+                      >
+                        Tipo de Documento
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['NumeroDocumento'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('NumeroDocumento', e.pageX, e.pageY)}
+                      >
+                        Número de Documento
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Acciones'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Acciones', e.pageX, e.pageY)}
+                      >
+                        Acciones
+                      </NeumorphicTableHeaderCell>
+                    </TableRow>
+                  )}
+                  {selectedType === 'Laborales' && (
+                    <TableRow>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['id'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('id', e.pageX, e.pageY)}
+                      >
+                        ID
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Cargo'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Cargo', e.pageX, e.pageY)}
+                      >
+                        Cargo
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Empresa'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Empresa', e.pageX, e.pageY)}
+                      >
+                        Empresa
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['InicioTrabajo'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('InicioTrabajo', e.pageX, e.pageY)}
+                      >
+                        Inicio de Trabajo
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Salario'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Salario', e.pageX, e.pageY)}
+                      >
+                        Salario
+                      </NeumorphicTableHeaderCell>
+                      <NeumorphicTableHeaderCell
+                        style={{ width: columnWidths['Acciones'] }}
+                        onMouseDown={(e) => handleColumnResizeStart('Acciones', e.pageX, e.pageY)}
+                      >
+                        Acciones
+                      </NeumorphicTableHeaderCell>
+                    </TableRow>
+                  )}
+                </TableHead>
+                <TableBody onMouseMove={handleColumnResize} onMouseUp={handleColumnResizeStop}>
+                  {serverError ? (
+                    <TableRow>
+                      <NeumorphicTableCell colSpan={12}>
+                        <Card variant="outlined" style={{ margin: 'auto', maxWidth: 400 }}>
+                          <CardContent style={{ backgroundColor: 'rgba(0, 0, 0, 0.04)' }}>
+                            <p style={{ textAlign: 'center', color: 'red', fontSize: '20px' }}>El servidor se encuentra apagado</p>
+                          </CardContent>
+                        </Card>
+                      </NeumorphicTableCell>
+                    </TableRow>
+                  ) : (
+                    <>
+                      {users.map((user, index) => (
+                        <TableRow key={index}>
+                          {selectedType === 'Personales' && (
+                            <>
+                              <NeumorphicTableCell>{user.id}</NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={pendingChanges[user.id]?.['Datos Personales']?.Nombre || user['Datos Personales'].Nombre}
+                                  onChange={(e) => handleInputChange(e, 'Nombre', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={pendingChanges[user.id]?.['Datos Personales']?.Apellido || user['Datos Personales'].Apellido}
+                                  onChange={(e) => handleInputChange(e, 'Apellido', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={pendingChanges[user.id]?.['Datos Personales']?.Edad || user['Datos Personales'].Edad}
+                                  onChange={(e) => handleInputChange(e, 'Edad', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                              <NeumorphicTableCell>{user['Datos Personales']?.TipoDocumento}</NeumorphicTableCell>
+                              <NeumorphicTableCell>{user['Datos Personales']?.NumeroDocumento}</NeumorphicTableCell>
+                            </>
+                          )}
+                          {selectedType === 'Laborales' && (
+                            <>
+                              <NeumorphicTableCell>{user.id}</NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={pendingChanges[user.id]?.['Datos Laborales']?.Cargo || user['Datos Laborales'].Cargo}
+                                  onChange={(e) => handleInputChange(e, 'Cargo', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={pendingChanges[user.id]?.['Datos Laborales']?.Empresa || user['Datos Laborales'].Empresa}
+                                  onChange={(e) => handleInputChange(e, 'Empresa', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={
+                                    pendingChanges[user.id]?.['Datos Laborales']?.InicioTrabajo || user['Datos Laborales'].InicioTrabajo
+                                  }
+                                  onChange={(e) => handleInputChange(e, 'InicioTrabajo', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                              <NeumorphicTableCell>
+                                <TextField
+                                  value={pendingChanges[user.id]?.['Datos Laborales']?.Salario || user['Datos Laborales'].Salario}
+                                  onChange={(e) => handleInputChange(e, 'Salario', user.id)}
+                                  disabled={currentIndex !== user.id}
+                                />
+                              </NeumorphicTableCell>
+                            </>
+                          )}
+                          <NeumorphicTableCell>
+                            <ActionContainer>
+                              {currentIndex !== user.id ? (
+                                <EditButton onClick={() => handleEditButtonClick(user.id)}>
+                                  <Edit style={{ color: '#d17308' }} />
+                                </EditButton>
+                              ) : (
+                                <NeumorphicButton onClick={() => handleSaveButtonClick(user.id)}>
+                                  <Save />
+                                </NeumorphicButton>
+                              )}
+                              <DeleteButton onClick={() => handleDeleteButtonClick(user.id)}>
+                                <Delete style={{ color: '#a84343' }} />
+                              </DeleteButton>
+                            </ActionContainer>
+                          </NeumorphicTableCell>
+                        </TableRow>
+                      ))}
+                    </>
+                  )}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </Grid>
         </>
       )}
     </Grid>

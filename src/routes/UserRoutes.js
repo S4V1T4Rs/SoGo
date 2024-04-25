@@ -6,7 +6,7 @@ import MainLayout from 'layout/MainLayout';
 
 // login option 3 routing
 const FormCall = Loadable(lazy(() => import('views/pages/CallPages/FormCall/FormCallDocs')));
-const FormHire = Loadable(lazy(() => import('views/pages/Rol/rol')));
+const FormVancancies = Loadable(lazy(() => import('views/pages/Vacantes/FormVacantes')));
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
@@ -19,8 +19,8 @@ const AuthenticationRoutes = {
       element: <FormCall />
     },
     {
-      path: '/users/hire',
-      element: <FormHire />
+      path: '/users/vacancies',
+      element: <FormVancancies />
     }
   ]
 };
