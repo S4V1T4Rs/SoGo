@@ -203,7 +203,7 @@ const Widget = () => {
   const [selectedCardName, setSelectedCardName] = useState('');
   // const [selectedState, setSelectedState] = useState('');
   const [candidatesData, setCandidatesData] = useState([]); // Estado para almacenar los datos de los candidatos
-  const [dataCounts, setDataCounts] = useState({});
+  // const [dataCounts, setDataCounts] = useState({});
 
   useEffect(() => {
     const fetchVacanciesData = async () => {
@@ -236,7 +236,7 @@ const Widget = () => {
         // Almacena la cantidad de datos asociados con la vacante actual
         newDataCounts[vacancyName] = vacancyCounts;
       });
-      setDataCounts(newDataCounts);
+      // setDataCounts(newDataCounts);
     };
 
     calculateDataCounts();
@@ -391,7 +391,7 @@ const Widget = () => {
                       onClick={() => handleCardClick(vacancy['Informe Vacantes']?.NombreVacante, 'Nuevo')}
                     >
                       <ProgressBar color={vacancyColors[vacancy['Informe Vacantes']?.NombreVacante]?.Nuevo || 'transparent'} />
-                      <ProgressText>{dataCounts[vacancy['Informe Vacantes']?.NombreVacante]?.[status] || 0}</ProgressText>
+                      <ProgressText>0</ProgressText>
                       <div>{status}</div>
                       <div>Nuevo</div>
                     </ProgressContainer>
@@ -402,7 +402,7 @@ const Widget = () => {
                       onClick={() => handleCardClick(vacancy['Informe Vacantes']?.NombreVacante, 'Aceptado')}
                     >
                       <ProgressBar color={vacancyColors[vacancy['Informe Vacantes']?.NombreVacante]?.Aceptado || 'transparent'} />
-                      <ProgressText>{dataCounts['Aceptado']}</ProgressText>
+                      <ProgressText>0</ProgressText>
                       <div>Aceptado</div>
                     </ProgressContainer>
                   </Grid>
