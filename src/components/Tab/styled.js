@@ -81,9 +81,20 @@ export const FormContent = styled.div`
   width: 100%;
   margin: 10px auto;
 `;
+export const MessageCardContainer = styled.div`
+  overflow-x: scroll; /* Permitir desplazamiento horizontal */
+  scroll-snap-type: x mandatory; /* Establecer cómo se deben "enganchar" las tarjetas */
+  display: flex;
+  flex-wrap: nowrap; /* Evitar que las tarjetas se envuelvan */
+`;
 export const MessageCard = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrar elementos horizontalmente */
+  justify-content: center; /* Centrar elementos verticalmente */
   padding: 10px;
-  width: 100%;
+  width: 150px;
+  height: 150px;
   border-radius: 10px;
   box-shadow:
     4px 4px 2px -1px rgba(0, 0, 0, 0.15),
@@ -91,9 +102,18 @@ export const MessageCard = styled.div`
   border: 1px solid rgba(0, 0, 0, 0);
   cursor: pointer;
   text-align: center;
-
-  //margin-left: 20px;
-  //margin-right: -5px;
-  //margin-left: 20px;
   color: ${({ type }) => (type === 'error' ? 'red' : 'green')};
+  flex: 0 0 auto; /* Evitar que las tarjetas se estiren */
+  scroll-snap-align: start;
+  /* Media query para dispositivos móviles */
+  @media (max-width: 768px) {
+    width: 120px;
+    height: 120px;
+    font-size: 0.8em;
+  }
+`;
+
+export const Counter = styled.div`
+  margin-top: auto; /* Empujar hacia abajo el contador */
+  font-size: 16px;
 `;

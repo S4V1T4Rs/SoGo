@@ -1,8 +1,7 @@
 //VacancieController.js
 
-import { db } from 'api/config/configfire';
-import { isDniInUse } from './validaciones';
 import { collection, deleteDoc, doc, getDocs, getDoc, setDoc, updateDoc } from '@firebase/firestore';
+import { db } from 'api/config/configfire';
 // Asegúrate de importar la instancia de Firestore correctamente desde tu archivo de configuración
 import axios from 'axios';
 
@@ -11,8 +10,7 @@ const usuariosRef = collection(db, 'Vancantes');
 //fireController.js
 export const createUsuario = async (
   data,
-  setPersonalFormValues,
-  setLaboralFormValues,
+  setVacanciesFormValues,
   setMessage,
   setMessageType,
   allFieldsFilled
@@ -51,33 +49,23 @@ export const createUsuario = async (
     // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
 
     // Obtener el ID generado por la API
-    const nextId = apiData.idCall;
+    const nextId = apiData.idVacancie;
 
     // Crear el objeto userData con los datos del usuario
     const userData = {
-      id: nextId.toString(),
-      'Datos Personales': {
-        Nombre: data.Nombre,
-        Apellido: data.Apellido,
-        Edad: data.Edad,
-        TipoDocumento: data.TipoDocumento,
-        NumeroDocumento: data.NumeroDocumento,
-        FechaNacimiento: data.FechaNacimiento,
-        Género: data.Género
-      },
-      'Datos Laborales': {
-        Cargo: data.Cargo,
-        Empresa: data.Empresa,
-        InicioTrabajo: data.InicioTrabajo,
-        Salario: data.Salario
+      idVacancie: nextId.toString(),
+      'Informe Vacantes': {
+        NombreVacante: data.NombreVacante,
+        Departamento: data.Departamento,
+        TipoJornada: data.TipoJornada,
+        Descripcion: data.Descripcion
       }
     };
 
     // Guardar el documento en Firestore con el ID generado por la API
     await setDoc(doc(usuariosRef, nextId.toString()), {
-      id: nextId.toString(),
-      'Datos Personales': userData['Datos Personales'],
-      'Datos Laborales': userData['Datos Laborales']
+      idVacancie: nextId.toString(),
+      'Informe Vacantes': userData['Informe Vacantes']
     });
 
     // Manejar la respuesta de la API según sea necesario
@@ -100,8 +88,7 @@ export const createUsuario = async (
       setMessage('');
       setMessageType('');
     }, 8000);
-    setPersonalFormValues({});
-    setLaboralFormValues({});
+    setVacanciesFormValues({});
     return nextId.toString(); // Retorna el ID del documento creado
   } catch (error) {
     console.error('Error creating document:', error);
@@ -110,16 +97,16 @@ export const createUsuario = async (
 };
 
 // Función para obtener todos los documentos de la colección 'usuarios'
-export const getUsuarios = async () => {
+export const getVacantes = async () => {
   try {
     const querySnapshot = await getDocs(usuariosRef);
     const users = [];
-    const apiResponse = await axios.get(`http://localhost:8080/api/call`);
+    const apiResponse = await axios.get(`http://localhost:8080/api/vacancie`);
     console.log('Response from API Update:', apiResponse.data);
     querySnapshot.forEach((doc) => {
       const userData = doc.data();
       // Assign unique identifier to each user
-      userData.id = doc.id;
+      userData.idVacancie = doc.idVacancie;
       users.push(userData);
     });
     return users;

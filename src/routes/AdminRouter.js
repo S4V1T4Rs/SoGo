@@ -7,7 +7,7 @@ import MainLayout from 'layout/MainLayout';
 // login option 3 routing
 const IpDect = Loadable(lazy(() => import('components/IP/DetectorIp')));
 const FormCall = Loadable(lazy(() => import('views/pages/CallPages/FormCall/FormCallDocs')));
-const TaxData = Loadable(lazy(() => import('views/pages/TaxData/TaxDatas')));
+const TaxData = Loadable(lazy(() => import('views/pages/authentication/authentication3/Login3')));
 // const FormHire = Loadable(lazy(() => import('views/pages/Rol/rol')));
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //

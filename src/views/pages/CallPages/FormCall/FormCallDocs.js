@@ -206,24 +206,6 @@ const FormCall = () => {
           'Datos Laborales': laboralData
         });
       }
-
-      // // Guardar el documento en Firestore
-      // await setDoc(doc(usuariosRef, nextId.toString()), {
-      //   id: nextId.toString(),
-      //   'Datos Personales': personalData,
-      //   'Datos Laborales': laboralData
-      // });
-
-      // // Mostrar mensaje adicional cuando se guarda en Firestore además de la API
-      // setMessage('Datos guardados correctamente en Firestore además de la API');
-      // setMessageType('success');
-
-      // setTimeout(() => {
-      //   setMessage('');
-      //   setMessageType('');
-      // }, 8000);
-      // setPersonalFormValues({});
-      // setLaboralFormValues({});
     } catch (error) {
       console.error('Error al guardar los datos:', error);
       if (error.response && error.response.data && error.response.data.error) {

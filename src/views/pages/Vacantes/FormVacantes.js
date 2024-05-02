@@ -15,13 +15,16 @@ import { labelsVacancies, namesVacancies, typesVacancies } from './variables';
 // import axios from 'axios';
 // import { isPersonalFormFilled, isLaboralFormFilled } from './validarTabs';
 // import UserTable from '../ListCall/listCall';
-import { createUsuario } from 'api/Controller/fireController';
+
 import { Conecction } from 'components/ButtonDB/ButtonConection';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from 'api/config/configfire';
 import { useSelector } from 'react-redux';
 import { isPersonalFormFilled } from '../CallPages/FormCall/validarTabs';
-import { TableVacancie } from './xd';
+
+import { createUsuario } from 'api/Controller/VacancieController';
+import Widget from 'components/Widgett/widget';
+
 
 const Vancancies = () => {
   const customization = useSelector((state) => state.customization);
@@ -34,6 +37,7 @@ const Vancancies = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isLocalDatabaseActive, setLocalDatabaseActive] = useState(false);
   // const [connectionButtonClicked] = useState(false);
+
   const [serverActive, setServerActive] = useState(false);
   useEffect(() => {
     // Función para verificar el estado del servidor
@@ -64,7 +68,7 @@ const Vancancies = () => {
 
   useEffect(() => {
     // Verificar si todos los campos están llenos
-    if (isPersonalFormFilled(vacanciesFormValues, ['0', '2', '3'])) {
+    if (isPersonalFormFilled(vacanciesFormValues, ['0', '1', '2', '3'])) {
       // Si todos los campos están llenos, limpiar el mensaje
       setMessage('');
       setMessageType('');
@@ -153,7 +157,8 @@ const Vancancies = () => {
         TipoJornada: vacanciesFormValues['2'] || '',
         Descripcion: vacanciesFormValues['3'] || ''
       };
-
+      // Log de los datos antes de enviarlos
+      console.log('Datos antes de enviar:', vacanciesData);
       // Si hay conexión a internet, guardar los datos en Firestore y en tu API
       if (isOnline) {
         await createUsuario({ ...vacanciesData }, setVacanciesFormValues, setMessage, setMessageType, allFieldsFilled);
@@ -172,19 +177,20 @@ const Vancancies = () => {
           setMessage('');
           setMessageType('');
         }, 8000);
-        setVacanciesFormValues({});
+
+        // Después de guardar los datos, actualiza el estado del departamento seleccionado
         const apiData = apiResponse.data;
         // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
 
         // Obtener el ID generado por la API
-        const nextId = apiData.idCall;
+        const nextId = apiData.idVacancie;
         // Guardar el documento en Firestore
         await setDoc(doc(vacanciesRef, nextId.toString()), {
           id: nextId.toString(),
-          'Datos Personales': vacanciesData
+          'Informe Vacantes': vacanciesData
         });
       }
-
+      setVacanciesFormValues({});
       // // Guardar el documento en Firestore
       // await setDoc(doc(usuariosRef, nextId.toString()), {
       //   id: nextId.toString(),
@@ -200,7 +206,7 @@ const Vancancies = () => {
       //   setMessage('');
       //   setMessageType('');
       // }, 8000);
-      // setPersonalFormValues({});
+      // setVacanciesFormValues({});
       // setLaboralFormValues({});
     } catch (error) {
       console.error('Error al guardar los datos:', error);
@@ -323,16 +329,12 @@ const Vancancies = () => {
                   names={namesVacancies}
                   types={typesVacancies}
                   values={Object.values(vacanciesFormValues)}
-                  // values={Object.values(personalFormValues || formData.Nombre, formData.Apellido, formData.TipoDocumento, formData.NumeroDocumento, formData.FechaNacimiento, formData.Género, formData.Edad)}
                   capitalization="primera"
                   onChange={(newValues) => {
-                    // const age = calculateAge(newValues['4']); // Calcular la edad usando la nueva fecha de nacimiento
                     setVacanciesFormValues((prevValues) => ({
                       ...prevValues,
                       ...newValues
-                      // 6: age !== undefined ? age.toString() : prevValues['4'] // Almacenar la edad en el índice 6
                     }));
-                    // setFormData({ ...formData, newValues });
                   }}
                   localbase={(!isOnline && !isLocalDatabaseActive) || !serverActive}
                 />
@@ -343,7 +345,7 @@ const Vancancies = () => {
               <>
                 <Grid item xs={12} md={12}>
                   <>
-                    <TableVacancie />
+                    <Widget />
                   </>
                 </Grid>
               </>

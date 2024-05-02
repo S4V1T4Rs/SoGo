@@ -126,7 +126,7 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
   const [departments, setDepartments] = useState([]);
   const [showCreateDepartmentInput, setShowCreateDepartmentInput] = useState(false);
   const [newDepartmentName, setNewDepartmentName] = useState('');
-  const [selectedDepartment, setSelectedDepartment] = useState('');
+  const [selectedDepartment, setSelectedDepartment] = useState('Seleccionar...');
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -139,6 +139,13 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
 
     fetchDepartments();
   }, []);
+
+  // Dentro del componente, actualiza el estado del departamento seleccionado
+  useEffect(() => {
+    // Actualiza el estado interno del componente con el nuevo valor del departamento seleccionado
+    setSelectedDepartment(selectedDepartment);
+  }, [selectedDepartment]);
+
   const handleSaveDepartment = async () => {
     try {
       // Crear objeto con el nombre del nuevo departamento
@@ -155,7 +162,8 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
 
       // Limpiar el campo de entrada del nuevo nombre de departamento
       setNewDepartmentName('');
-
+      // Restablecer el departamento seleccionado a 'Seleccionar...'
+      setSelectedDepartment('Seleccionar...');
       // Ocultar el campo de entrada después de guardar
       setShowCreateDepartmentInput(false);
     } catch (error) {
@@ -188,7 +196,7 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
 
   const handleDepartmentSelection = (departmentName) => {
     setSelectedDepartment(departmentName);
-    const departmentsIndex = names.indexOf('departments');
+    const departmentsIndex = names.indexOf('department');
     if (departmentsIndex !== -1) {
       const newInputValues = [...inputValues];
       newInputValues[departmentsIndex] = departmentName;
