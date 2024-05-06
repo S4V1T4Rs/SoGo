@@ -9,7 +9,7 @@ import labor from 'assets/images/icons/labor.png';
 import privacy from 'assets/images/icons/privacy.png';
 import table from 'assets/images/icons/table.png';
 import ButtonSave from 'components/ButtonSave/ButtonSave';
-import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'components/Tab/styled';
+import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'Style/Tab/styled';
 import {
   labelsLaboral,
   labelsPersonal,

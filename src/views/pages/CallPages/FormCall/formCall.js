@@ -7,7 +7,7 @@ import { Avatar, Grid, useMediaQuery } from '@mui/material';
 import user from 'assets/images/icons/man.png';
 import table from 'assets/images/icons/table.png';
 import ButtonSave from 'components/ButtonSave/ButtonSave';
-import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'components/Tab/styled';
+import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'Style/Tab/styled';
 import { labelsLaboral, labelsPersonal, namesLaboral, namesPersonal, typesLaboral, typesPersonal } from './variables';
 import { FormFieldsValidator, calculateAge } from './validaciones';
 import { Conecction } from 'components/ButtonDB/ButtonConection';

@@ -1,5 +1,5 @@
 //Vacantes.js
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Title } from 'components/titulo';
 import axios from 'axios';
 import TextDinamic from 'components/ButtonDinamic/buttonDinamic';
@@ -9,8 +9,8 @@ import { Avatar, Grid, useMediaQuery } from '@mui/material';
 import user from 'assets/images/icons/man.png';
 import table from 'assets/images/icons/table.png';
 import ButtonSave from 'components/ButtonSave/ButtonSave';
-import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'components/Tab/styled';
-import { labelsVacancies, namesVacancies, typesVacancies } from './variables';
+import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'Style/Tab/styled';
+import { labelsVacancies, namesVacancies, typesVacancies } from '../Values/variables';
 // import { calculateAge } from './validaciones';
 // import axios from 'axios';
 // import { isPersonalFormFilled, isLaboralFormFilled } from './validarTabs';
@@ -20,11 +20,10 @@ import { Conecction } from 'components/ButtonDB/ButtonConection';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from 'api/config/configfire';
 import { useSelector } from 'react-redux';
-import { isPersonalFormFilled } from '../CallPages/FormCall/validarTabs';
+import { isPersonalFormFilled } from '../../CallPages/FormCall/validarTabs';
 
 import { createUsuario } from 'api/Controller/VacancieController';
-import Widget from 'components/Widgett/widget';
-
+import TableVacancie from '../Tablas/TablaEstadoVacante';
 
 const Vancancies = () => {
   const customization = useSelector((state) => state.customization);
@@ -44,7 +43,7 @@ const Vancancies = () => {
     const checkServerStatus = async () => {
       try {
         // Realiza una petición al servidor para verificar si está activo
-        const response = await axios.get('http://localhost:8080/api/vacancie');
+        const response = await axios.get('http://localhost:8080/api/vacante');
         if (response.status === 200) {
           // Si el servidor responde correctamente, lo marcamos como activo
           setServerActive(true);
@@ -79,32 +78,24 @@ const Vancancies = () => {
   }, [vacanciesFormValues]);
 
   useEffect(() => {
-    const onlineHandler = () => {
-      setIsOnline(true);
-      // syncDataWithFirebase();
-    };
-
-    const offlineHandler = () => {
-      setIsOnline(false);
-    };
-
-    const handleOnline = onlineHandler;
-    const handleOffline = offlineHandler;
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const onlineHandler = () => setIsOnline(true);
+    const offlineHandler = () => setIsOnline(false);
+    window.addEventListener('online', onlineHandler);
+    window.addEventListener('offline', offlineHandler);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', onlineHandler);
+      window.removeEventListener('offline', offlineHandler);
     };
-  }, [isOnline]);
+  }, []);
+
   useEffect(() => {
     if (isOnline) {
       setMessage('');
       setMessageType('');
     }
   }, [isOnline]);
+
   useEffect(() => {
     // Mostrar el mensaje solo si no se ha hecho clic en el botón de conexión y el mensaje es verdadero
     if (!isLocalDatabaseActive && !message && !isOnline) {
@@ -139,37 +130,28 @@ const Vancancies = () => {
   //   }
   // }, [connectionButtonClicked, message]);
 
-  //FormCallDos.js
-  const handleSubmit = async () => {
+  //FormVacantes.js
+  const handleSubmit = useCallback(async () => {
     try {
-      // Referencia a la colección 'usuarios'
-      const vacanciesRef = collection(db, 'Vacancie');
-      // Comprobación de valores personalFormValues y laboralFormValues
-      if (!vacanciesFormValues) {
-        console.error('Los valores personalFormValues o laboralFormValues son undefined.');
-        return;
-      }
-
-      // const age = calculateAge(personalFormValues['4']);
       const vacanciesData = {
-        NombreVacante: vacanciesFormValues['0'] || '',
-        Departamento: vacanciesFormValues['1'] || '',
-        TipoJornada: vacanciesFormValues['2'] || '',
-        Descripcion: vacanciesFormValues['3'] || ''
+        vacancyName: vacanciesFormValues['0'] || '',
+        description: vacanciesFormValues['1'] || '',
+        workType: vacanciesFormValues['2'] || '',
+        department: vacanciesFormValues['3'] || '',
+        creationDate: new Date().toISOString().split('T')[0],
+        status: vacanciesFormValues['5'] || ''
       };
-      // Log de los datos antes de enviarlos
-      console.log('Datos antes de enviar:', vacanciesData);
-      // Si hay conexión a internet, guardar los datos en Firestore y en tu API
-      if (isOnline) {
-        await createUsuario({ ...vacanciesData }, setVacanciesFormValues, setMessage, setMessageType, allFieldsFilled);
-      } else {
-        // Verificar si el DNI ya está en uso
-        // Si no hay conexión a internet, guardar los datos solo en tu API
-        const apiResponse = await axios.post('http://localhost:8080/api/vacancie', {
-          ...vacanciesData
-        });
 
-        // Manejar la respuesta de la API según sea necesario
+      console.log('Datos antes de enviar:', vacanciesData);
+
+      if (isOnline) {
+        const departmentsResponse = await axios.get('http://localhost:8080/api/departamento');
+        const departmentId = departmentsResponse.data.find(
+          (department) => department.departmentName === vacanciesFormValues['3']
+        )?.departmentId;
+        await createUsuario({ ...vacanciesData }, departmentId, setVacanciesFormValues, setMessage, setMessageType, allFieldsFilled);
+      } else {
+        const apiResponse = await axios.post('http://localhost:8080/api/vacante', { ...vacanciesData });
         console.log('Respuesta de la API:', apiResponse.data);
         setMessage('Datos guardados correctamente en tu API');
         setMessageType('success');
@@ -177,41 +159,17 @@ const Vancancies = () => {
           setMessage('');
           setMessageType('');
         }, 8000);
-
-        // Después de guardar los datos, actualiza el estado del departamento seleccionado
-        const apiData = apiResponse.data;
-        // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
-
-        // Obtener el ID generado por la API
-        const nextId = apiData.idVacancie;
-        // Guardar el documento en Firestore
+        const nextId = apiResponse.data.vacancyId;
+        const vacanciesRef = collection(db, 'Vacancie');
         await setDoc(doc(vacanciesRef, nextId.toString()), {
-          id: nextId.toString(),
-          'Informe Vacantes': vacanciesData
+          vacancyId: nextId.toString(),
+          'Detalles de Vacantes': vacanciesData
         });
       }
       setVacanciesFormValues({});
-      // // Guardar el documento en Firestore
-      // await setDoc(doc(usuariosRef, nextId.toString()), {
-      //   id: nextId.toString(),
-      //   'Datos Personales': personalData,
-      //   'Datos Laborales': laboralData
-      // });
-
-      // // Mostrar mensaje adicional cuando se guarda en Firestore además de la API
-      // setMessage('Datos guardados correctamente en Firestore además de la API');
-      // setMessageType('success');
-
-      // setTimeout(() => {
-      //   setMessage('');
-      //   setMessageType('');
-      // }, 8000);
-      // setVacanciesFormValues({});
-      // setLaboralFormValues({});
     } catch (error) {
       console.error('Error al guardar los datos:', error);
       if (error.response && error.response.data && error.response.data.error) {
-        // Si la respuesta contiene un mensaje de error, mostrarlo al usuario
         setMessage(error.response.data.error);
         setMessageType('error');
         setTimeout(() => {
@@ -219,13 +177,8 @@ const Vancancies = () => {
           setMessageType('');
         }, 20000);
       }
-      // setPersonalFormValues((prevValues) => ({
-      //   ...prevValues,
-      //   3: '' // Limpiar el valor del campo del número de documento
-      // }));
-      // Manejar el error según sea necesario
     }
-  };
+  }, [isOnline, vacanciesFormValues, allFieldsFilled]);
   const isMobile = useMediaQuery('(min-width:0px) and (max-width:1536px)');
   return (
     <>
@@ -345,7 +298,7 @@ const Vancancies = () => {
               <>
                 <Grid item xs={12} md={12}>
                   <>
-                    <Widget />
+                    <TableVacancie />
                   </>
                 </Grid>
               </>

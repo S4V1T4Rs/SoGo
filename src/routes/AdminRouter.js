@@ -8,6 +8,7 @@ import MainLayout from 'layout/MainLayout';
 const IpDect = Loadable(lazy(() => import('components/IP/DetectorIp')));
 const FormCall = Loadable(lazy(() => import('views/pages/CallPages/FormCall/FormCallDocs')));
 const TaxData = Loadable(lazy(() => import('views/pages/authentication/authentication3/Login3')));
+const PageDepartamento = Loadable(lazy(() => import('views/pages/Departamento/Formulario/FormDepartamento')));
 // const FormHire = Loadable(lazy(() => import('views/pages/Rol/rol')));
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
@@ -19,6 +20,10 @@ const AuthenticationRoutes = {
     {
       path: '/admin/usuarios',
       element: <FormCall />
+    },
+    {
+      path: '/admin/department',
+      element: <PageDepartamento />
     },
     {
       path: '/admin/asistencia',

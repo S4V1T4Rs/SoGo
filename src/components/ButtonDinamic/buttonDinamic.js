@@ -130,7 +130,7 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
-        const response = await axios.get('http://localhost:8080/api/department');
+        const response = await axios.get('http://localhost:8080/api/departamento');
         setDepartments(response.data);
       } catch (error) {
         console.error('Error fetching departments:', error);
@@ -149,10 +149,10 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
   const handleSaveDepartment = async () => {
     try {
       // Crear objeto con el nombre del nuevo departamento
-      const newDepartment = { NombreDepartamento: newDepartmentName };
+      const newDepartment = { departmentName: newDepartmentName };
 
       // Enviar una solicitud POST al endpoint de tu API para crear el nuevo departamento
-      const response = await axios.post('http://localhost:8080/api/department', newDepartment);
+      const response = await axios.post('http://localhost:8080/api/departamento', newDepartment);
 
       // Manejar la respuesta según sea necesario (por ejemplo, actualizar el estado global)
       console.log('Respuesta de la API:', response.data);
@@ -181,11 +181,11 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
   const handleDeleteDepartment = async (departmentId) => {
     try {
       // Eliminar el departamento localmente
-      const updatedDepartments = departments.filter((department) => department.idDepartamento !== departmentId);
+      const updatedDepartments = departments.filter((department) => department.departmentId !== departmentId);
       setDepartments(updatedDepartments);
 
       // Enviar una solicitud DELETE a la API para eliminar el departamento
-      await axios.delete(`http://localhost:8080/api/department/${departmentId}`);
+      await axios.delete(`http://localhost:8080/api/departamento/${departmentId}`);
 
       // Puedes agregar más lógica aquí, como actualizar el estado global si es necesario
     } catch (error) {
@@ -233,9 +233,9 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
                       <div>
                         {departments.map((department, index) => (
                           <React.Fragment key={index}>
-                            <StyledDepartmentItem onClick={() => handleDepartmentSelection(department.NombreDepartamento)}>
-                              {department.idDepartamento}) {department.NombreDepartamento}{' '}
-                              <StyledSaveButton onClick={() => handleDeleteDepartment(department.idDepartamento)}>
+                            <StyledDepartmentItem onClick={() => handleDepartmentSelection(department.departmentName)}>
+                              {department.departmentId}) {department.departmentName}{' '}
+                              <StyledSaveButton onClick={() => handleDeleteDepartment(department.departmentId)}>
                                 <Delete />
                               </StyledSaveButton>
                             </StyledDepartmentItem>

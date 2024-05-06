@@ -46,7 +46,7 @@ const admin = {
       id: 'depa',
       title: 'Departamento',
       type: 'item',
-      url: '/admin/xd',
+      url: '/admin/department',
       icon: icons.IconHierarchy
     },
     {

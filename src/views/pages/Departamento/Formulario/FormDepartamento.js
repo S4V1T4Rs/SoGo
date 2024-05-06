@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+//Vacantes.js
+import React, { useCallback, useEffect, useState } from 'react';
 import { Title } from 'components/titulo';
 import axios from 'axios';
 import TextDinamic from 'components/ButtonDinamic/buttonDinamic';
@@ -9,25 +10,25 @@ import user from 'assets/images/icons/man.png';
 import table from 'assets/images/icons/table.png';
 import ButtonSave from 'components/ButtonSave/ButtonSave';
 import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'Style/Tab/styled';
-
+// import { calculateAge } from './validaciones';
 // import axios from 'axios';
+// import { isPersonalFormFilled, isLaboralFormFilled } from './validarTabs';
+// import UserTable from '../ListCall/listCall';
 
-import { createUsuario } from 'api/Controller/fireController';
 import { Conecction } from 'components/ButtonDB/ButtonConection';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from 'api/config/configfire';
-import { calculateAge } from '../CallPages/FormCall/validaciones';
-import { labelsLaboral, labelsPersonal, namesLaboral, namesPersonal, typesLaboral, typesPersonal } from '../CallPages/FormCall/variables';
-import { isPersonalFormFilled, isLaboralFormFilled } from '../CallPages/FormCall/validarTabs';
-import UserTable from '../CallPages/ListCall/listCall';
-// import { isDniInUse } from 'api/Controller/validaciones';
+import { useSelector } from 'react-redux';
+import { isPersonalFormFilled } from '../../CallPages/FormCall/validarTabs';
 
-const TaxData = () => {
-  const [activeTab, setActiveTab] = useState('personal');
-  const [personalFormValues, setPersonalFormValues] = useState({});
-  const [laboralFormValues, setLaboralFormValues] = useState({});
-  //const [age] = useState('');
-  // const [isLocalDatabaseActive, setLocalDatabaseActive] = useState(false);
+import Widget from 'components/Widgett/widget';
+import { labelsDepartamento, namesDepartamento, typesDepartamento } from '../Values/variables';
+import { createDepartments } from '../Controller/departamentoController';
+
+const Vancancies = () => {
+  const customization = useSelector((state) => state.customization);
+  const [activeTab, setActiveTab] = useState('vacancies');
+  const [departmentFormValues, setDepartmentsFormValues] = useState({});
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
@@ -35,13 +36,14 @@ const TaxData = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const [isLocalDatabaseActive, setLocalDatabaseActive] = useState(false);
   // const [connectionButtonClicked] = useState(false);
+
   const [serverActive, setServerActive] = useState(false);
   useEffect(() => {
     // Función para verificar el estado del servidor
     const checkServerStatus = async () => {
       try {
         // Realiza una petición al servidor para verificar si está activo
-        const response = await axios.get('http://localhost:8080/api/call');
+        const response = await axios.get('http://localhost:8080/api/departamento');
         if (response.status === 200) {
           // Si el servidor responde correctamente, lo marcamos como activo
           setServerActive(true);
@@ -65,10 +67,7 @@ const TaxData = () => {
 
   useEffect(() => {
     // Verificar si todos los campos están llenos
-    if (
-      isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6']) &&
-      isLaboralFormFilled(laboralFormValues, ['0', '1', '2', '3'])
-    ) {
+    if (isPersonalFormFilled(departmentFormValues, ['0', '1'])) {
       // Si todos los campos están llenos, limpiar el mensaje
       setMessage('');
       setMessageType('');
@@ -76,35 +75,27 @@ const TaxData = () => {
     } else {
       setAllFieldsFilled(false);
     }
-  }, [personalFormValues, laboralFormValues]);
+  }, [departmentFormValues]);
 
   useEffect(() => {
-    const onlineHandler = () => {
-      setIsOnline(true);
-      // syncDataWithFirebase();
-    };
-
-    const offlineHandler = () => {
-      setIsOnline(false);
-    };
-
-    const handleOnline = onlineHandler;
-    const handleOffline = offlineHandler;
-
-    window.addEventListener('online', handleOnline);
-    window.addEventListener('offline', handleOffline);
+    const onlineHandler = () => setIsOnline(true);
+    const offlineHandler = () => setIsOnline(false);
+    window.addEventListener('online', onlineHandler);
+    window.addEventListener('offline', offlineHandler);
 
     return () => {
-      window.removeEventListener('online', handleOnline);
-      window.removeEventListener('offline', handleOffline);
+      window.removeEventListener('online', onlineHandler);
+      window.removeEventListener('offline', offlineHandler);
     };
-  }, [isOnline]);
+  }, []);
+
   useEffect(() => {
     if (isOnline) {
       setMessage('');
       setMessageType('');
     }
   }, [isOnline]);
+
   useEffect(() => {
     // Mostrar el mensaje solo si no se ha hecho clic en el botón de conexión y el mensaje es verdadero
     if (!isLocalDatabaseActive && !message && !isOnline) {
@@ -139,53 +130,25 @@ const TaxData = () => {
   //   }
   // }, [connectionButtonClicked, message]);
 
-  //FormCallDos.js
-  const handleSubmit = async () => {
+  //FormVacantes.js
+  const handleSubmit = useCallback(async () => {
     try {
-      // Referencia a la colección 'usuarios'
-      const usuariosRef = collection(db, 'usuarios');
-      // Comprobación de valores personalFormValues y laboralFormValues
-      if (!personalFormValues || !laboralFormValues) {
-        console.error('Los valores personalFormValues o laboralFormValues son undefined.');
-        return;
-      }
-
-      const age = calculateAge(personalFormValues['4']);
-      const personalData = {
-        Nombre: personalFormValues['0'] || '',
-        Apellido: personalFormValues['1'] || '',
-        TipoDocumento: personalFormValues['2'] || '',
-        NumeroDocumento: personalFormValues['3'] || '',
-        FechaNacimiento: personalFormValues['4'] || '',
-        Género: personalFormValues['5'] || '',
-        Edad: age.toString()
-      };
-      const laboralData = {
-        Empresa: laboralFormValues['0'] || '',
-        Cargo: laboralFormValues['1'] || '',
-        InicioTrabajo: laboralFormValues['2'] || '',
-        Salario: laboralFormValues['3'] || ''
+      const departmentsData = {
+        departmentName: departmentFormValues['0'] || '',
+        description: departmentFormValues['1'] || '',
+        status: departmentFormValues['3'] || ''
       };
 
-      // Si hay conexión a internet, guardar los datos en Firestore y en tu API
+      console.log('Datos antes de enviar:', departmentsData);
+
       if (isOnline) {
-        await createUsuario(
-          { ...personalData, ...laboralData },
-          setPersonalFormValues,
-          setLaboralFormValues,
-          setMessage,
-          setMessageType,
-          allFieldsFilled
-        );
+        // const departmentsResponse = await axios.get('http://localhost:8080/api/departamento');
+        // const departmentId = departmentsResponse.data.find(
+        //   (department) => department.departmentName === vacanciesFormValues['3']
+        // )?.departmentId;
+        await createDepartments({ ...departmentsData }, setDepartmentsFormValues, setMessage, setMessageType, allFieldsFilled);
       } else {
-        // Verificar si el DNI ya está en uso
-        // Si no hay conexión a internet, guardar los datos solo en tu API
-        const apiResponse = await axios.post('http://localhost:8080/api/call', {
-          ...personalData,
-          ...laboralData
-        });
-
-        // Manejar la respuesta de la API según sea necesario
+        const apiResponse = await axios.post('http://localhost:8080/api/departamento', { ...departmentsData });
         console.log('Respuesta de la API:', apiResponse.data);
         setMessage('Datos guardados correctamente en tu API');
         setMessageType('success');
@@ -193,42 +156,17 @@ const TaxData = () => {
           setMessage('');
           setMessageType('');
         }, 8000);
-        setPersonalFormValues({});
-        setLaboralFormValues({});
-        const apiData = apiResponse.data;
-        // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
-
-        // Obtener el ID generado por la API
-        const nextId = apiData.idCall;
-        // Guardar el documento en Firestore
-        await setDoc(doc(usuariosRef, nextId.toString()), {
-          id: nextId.toString(),
-          'Datos Personales': personalData,
-          'Datos Laborales': laboralData
+        const nextId = apiResponse.data.departmentId;
+        const departmentsRef = collection(db, 'Departamentos');
+        await setDoc(doc(departmentsRef, nextId.toString()), {
+          departmentId: nextId.toString(),
+          'Detalles de Departamentos': departmentsData
         });
       }
-
-      // // Guardar el documento en Firestore
-      // await setDoc(doc(usuariosRef, nextId.toString()), {
-      //   id: nextId.toString(),
-      //   'Datos Personales': personalData,
-      //   'Datos Laborales': laboralData
-      // });
-
-      // // Mostrar mensaje adicional cuando se guarda en Firestore además de la API
-      // setMessage('Datos guardados correctamente en Firestore además de la API');
-      // setMessageType('success');
-
-      // setTimeout(() => {
-      //   setMessage('');
-      //   setMessageType('');
-      // }, 8000);
-      // setPersonalFormValues({});
-      // setLaboralFormValues({});
+      setDepartmentsFormValues({});
     } catch (error) {
       console.error('Error al guardar los datos:', error);
       if (error.response && error.response.data && error.response.data.error) {
-        // Si la respuesta contiene un mensaje de error, mostrarlo al usuario
         setMessage(error.response.data.error);
         setMessageType('error');
         setTimeout(() => {
@@ -236,13 +174,8 @@ const TaxData = () => {
           setMessageType('');
         }, 20000);
       }
-      setPersonalFormValues((prevValues) => ({
-        ...prevValues,
-        3: '' // Limpiar el valor del campo del número de documento
-      }));
-      // Manejar el error según sea necesario
     }
-  };
+  }, [isOnline, departmentFormValues, allFieldsFilled]);
   const isMobile = useMediaQuery('(min-width:0px) and (max-width:1536px)');
   return (
     <>
@@ -258,26 +191,31 @@ const TaxData = () => {
           </>
         )} */}
             <Tabs
-              $active={activeTab === 'personal'}
-              onClick={() => setActiveTab('personal')}
+              $active={activeTab === 'vacancies'}
+              $darkMode={customization.darkMode}
+              onClick={() => setActiveTab('vacancies')}
               style={{
-                backgroundColor: isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6']) ? '#d1ead1' : 'initial'
+                borderRadius: `${customization.borderRadius}px`,
+                backgroundColor: isPersonalFormFilled(departmentFormValues, ['0', '1'])
+                  ? customization.darkMode
+                    ? '#112d15' // Modo oscuro: verde oscuro
+                    : '#a4eeb9' // Modo claro: verde claro
+                  : 'initial'
               }}
             >
               <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels>Personal</Labels>
+              <Labels $darkMode={customization.darkMode}>Departamento</Labels>
             </Tabs>
             <Tabs
-              $active={activeTab === 'laboral'}
-              onClick={() => setActiveTab('laboral')}
-              style={{ backgroundColor: isLaboralFormFilled(laboralFormValues, ['0', '1', '2', '3']) ? '#d1ead1' : 'initial' }}
+              $active={activeTab === 'table'}
+              $darkMode={customization.darkMode}
+              onClick={() => setActiveTab('table')}
+              style={{
+                borderRadius: `${customization.borderRadius}px`
+              }}
             >
-              <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels>Laboral</Labels>
-            </Tabs>
-            <Tabs $active={activeTab === 'table'} onClick={() => setActiveTab('table')}>
               <Avatar src={table} sx={{ marginBottom: '10px' }} />
-              <Labels>Tabla</Labels>
+              <Labels $darkMode={customization.darkMode}>Tabla</Labels>
             </Tabs>
           </TabContainer>
           {useMediaQuery('(max-width:600px)') && (
@@ -289,7 +227,7 @@ const TaxData = () => {
             </Grid>
           )}
           <Grid container justifyContent="center" alignItems="center" marginBottom={'10px'}>
-            {activeTab === 'laboral' ? (
+            {activeTab === 'vacancies' ? (
               <>
                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '16px' }}>
                   <ButtonSave onClick={handleSubmit}>Guardar</ButtonSave>
@@ -317,7 +255,7 @@ const TaxData = () => {
         </Grid>
 
         <Grid item xs={12} md={11} xl={11}>
-          <FormContent>
+          <FormContent $darkMode={customization.darkMode}>
             {!useMediaQuery('(max-width:600px)') && (
               // <Grid item xs={12} md={2} sx={{ backgroundColor: 'brown' }}>
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '0px' }}>
@@ -332,56 +270,37 @@ const TaxData = () => {
               //</Grid>
             )}
             {activeTab === 'defecto' && <></>}
-            {activeTab === 'personal' && (
+            {activeTab === 'vacancies' && (
               <>
                 <Title titulo="Información personal" />
                 <TextDinamic
-                  number={7}
-                  labels={labelsPersonal}
-                  names={namesPersonal}
-                  types={typesPersonal}
-                  values={Object.values(personalFormValues)}
-                  // values={Object.values(personalFormValues || formData.Nombre, formData.Apellido, formData.TipoDocumento, formData.NumeroDocumento, formData.FechaNacimiento, formData.Género, formData.Edad)}
+                  number={2}
+                  labels={labelsDepartamento}
+                  names={namesDepartamento}
+                  types={typesDepartamento}
+                  values={Object.values(departmentFormValues)}
                   capitalization="primera"
                   onChange={(newValues) => {
-                    const age = calculateAge(newValues['4']); // Calcular la edad usando la nueva fecha de nacimiento
-                    setPersonalFormValues((prevValues) => ({
+                    setDepartmentsFormValues((prevValues) => ({
                       ...prevValues,
-                      ...newValues,
-                      6: age !== undefined ? age.toString() : prevValues['4'] // Almacenar la edad en el índice 6
+                      ...newValues
                     }));
-                    // setFormData({ ...formData, newValues });
                   }}
                   localbase={(!isOnline && !isLocalDatabaseActive) || !serverActive}
                 />
               </>
             )}
-            {activeTab === 'laboral' && (
-              <>
-                <Title titulo="Información Laboral" />
-                <TextDinamic
-                  number={4}
-                  labels={labelsLaboral}
-                  names={namesLaboral}
-                  types={typesLaboral}
-                  values={Object.values(laboralFormValues)}
-                  // values={Object.values(laboralFormValues || formData.Empresa, formData.Cargo, formData.InicioTrabajo, formData.Salario)}
-                  capitalization="primera"
-                  onChange={(newValues) => {
-                    setLaboralFormValues({ ...laboralFormValues, ...newValues });
-                    // setFormData({ ...formData, newValues });
-                  }}
-                  localbase={(!isOnline && !isLocalDatabaseActive) || !serverActive}
-                />
-              </>
-            )}
+
             {activeTab === 'table' && (
               <>
                 <Grid item xs={12} md={12}>
-                  <UserTable />
+                  <>
+                    <Widget />
+                  </>
                 </Grid>
               </>
             )}
+
             {activeTab === '4' && <></>}
             {activeTab === '5' && <></>}
             {activeTab === '6' && <></>}
@@ -392,4 +311,4 @@ const TaxData = () => {
   );
 };
 
-export default TaxData;
+export default Vancancies;

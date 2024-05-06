@@ -8,7 +8,7 @@ import { Avatar, Grid, useMediaQuery } from '@mui/material';
 import user from 'assets/images/icons/man.png';
 import table from 'assets/images/icons/table.png';
 import ButtonSave from 'components/ButtonSave/ButtonSave';
-import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'components/Tab/styled';
+import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'Style/Tab/styled';
 import { labelsLaboral, labelsPersonal, namesLaboral, namesPersonal, typesLaboral, typesPersonal } from './variables';
 import { calculateAge } from './validaciones';
 // import axios from 'axios';
@@ -324,7 +324,11 @@ const FormCall = () => {
               // <Grid item xs={12} md={2} sx={{ backgroundColor: 'brown' }}>
               <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '0px' }}>
                 <>
-                  {message && <MessageCard type={messageType}>{message}</MessageCard>}
+                  {message && (
+                    <MessageCard width={'20%'} height={'40px'} type={messageType}>
+                      {message}
+                    </MessageCard>
+                  )}
                   {/* {!serverActive && <MessageCard type={messageType}>{message}</MessageCard>} */}
                   {/* {(connectionButtonClicked || message) && (
                   <MessageCard type={'error'}>¡Debes activar la base de datos local para guardar los datos sin conexión!</MessageCard>

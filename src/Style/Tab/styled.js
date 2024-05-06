@@ -86,6 +86,7 @@ export const MessageCardContainer = styled.div`
   scroll-snap-type: x mandatory; /* Establecer cómo se deben "enganchar" las tarjetas */
   display: flex;
   flex-wrap: nowrap; /* Evitar que las tarjetas se envuelvan */
+  background-color: aqua;
 `;
 export const MessageCard = styled.div`
   display: flex;
@@ -93,8 +94,8 @@ export const MessageCard = styled.div`
   align-items: center; /* Centrar elementos horizontalmente */
   justify-content: center; /* Centrar elementos verticalmente */
   padding: 10px;
-  width: 150px;
-  height: 150px;
+  width: ${({ width }) => width};
+  height: ${({ height }) => height};
   border-radius: 10px;
   box-shadow:
     4px 4px 2px -1px rgba(0, 0, 0, 0.15),
