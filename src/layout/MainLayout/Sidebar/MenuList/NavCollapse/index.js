@@ -27,7 +27,7 @@ const NavCollapse = ({ menu, level }) => {
   const handleClick = () => {
     setOpen(!open);
     setSelected(!selected ? menu.id : null);
-    if (menu?.id !== 'users' && menu?.id !== 'admin' && menu?.id !== 'config') {
+    if (menu?.id !== 'reclutamiento' && menu?.id !== 'admin' && menu?.id !== 'config') {
       navigate(menu.children[0]?.url);
     }
   };

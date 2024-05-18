@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 /**/
 import styled from 'styled-components';
 import { Grid, Typography } from '@mui/material';
-import { getVacantes } from 'api/Controller/VacancieController';
+import { getVacancies } from 'views/pages/Vacantes/Controller/VacancieController';
 import { FormContent } from 'Style/Tab/styled';
 import { useSelector } from 'react-redux';
 import { SketchPicker } from 'react-color';
@@ -246,7 +246,7 @@ const Widget = () => {
   useEffect(() => {
     const fetchVacanciesData = async () => {
       try {
-        const data = await getVacantes();
+        const data = await getVacancies();
         setVacanciesData(data);
         const savedColors = JSON.parse(localStorage.getItem('vacancyColors')) || {};
         setVacancyColors(savedColors);

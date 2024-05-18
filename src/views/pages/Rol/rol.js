@@ -1,119 +1,81 @@
-import React, { useState, useEffect } from 'react';
-import BinaryTree from 'components/ArbolGeneologico/tree';
-import admin from 'components/ArbolGeneologico/img/admin1.png';
-import rrhh from 'components/ArbolGeneologico/img/human-resources.png';
+// src/styledComponents.js
+import styled from 'styled-components';
+
+export const Container = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background-color: #f5f6fa;
+  min-height: 100vh;
+`;
+
+export const Board = styled.div`
+  display: flex;
+  gap: 20px;
+  margin-top: 20px;
+`;
+
+export const Column = styled.div`
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 200px;
+  min-height: 400px;
+  padding: 10px;
+`;
+
+export const ColumnHeader = styled.div`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  font-weight: bold;
+`;
+
+export const ColumnBody = styled.div`
+  padding: 10px;
+`;
+
+export const AddButton = styled.button`
+  background-color: #7d4cdb;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 5px 10px;
+  cursor: pointer;
+
+  &:hover {
+    background-color: #5c2db0;
+  }
+`;
+// src/App.js
+import React from 'react';
 
 const Trees = () => {
-  const [selectedRole, setSelectedRole] = useState('Dueña'); // Establecer 'Dueña' como valor inicial
-
-  const rolesData = [
-    {
-      name: 'Dueña',
-      image: 'images/1.jpg',
-      description: 'Este rol tiene el control total sobre el sistema.',
-      children: [
-        {
-          name: 'Administrador',
-          image: admin,
-          description: 'Este rol tiene permisos administrativos sobre el sistema.',
-          children: [
-            {
-              name: 'Tú (Ejemplo)',
-              image: 'images/tu.jpg',
-              description: 'Esta es tu descripción.'
-            },
-            {
-              name: 'Otro Rol (Ejemplo)',
-              image: 'images/otro.jpg',
-              description: 'Esta es la descripción de otro rol.'
-            }
-          ]
-        },
-        {
-          name: 'RR.HH.',
-          image: rrhh,
-          description: 'Este rol maneja los recursos humanos de la empresa.',
-          children: [
-            {
-              name: 'Analista de RR.HH.',
-              image: 'images/analista.jpg',
-              description: 'Descripción del analista de RR.HH.'
-            },
-            {
-              name: 'Asistente de RR.HH.',
-              image: 'images/asistente.jpg',
-              description: 'Descripción del asistente de RR.HH.'
-            }
-          ]
-        }
-      ]
-    },
-    {
-      name: 'Administrador',
-      image: 'images/2.jpg',
-      description: 'Este rol tiene permisos administrativos sobre el sistema.',
-      children: [
-        {
-          name: 'Empleado 1',
-          image: 'images/tu.jpg',
-          description: 'Descripción del Empleado 1.',
-          children: [{ name: 'Tú', image: 'images/tu.jpg', description: 'Esta es tu descripción.' }]
-        },
-        {
-          name: 'Empleado 2',
-          image: 'images/otro.jpg',
-          description: 'Descripción del Empleado 2.',
-          children: [{ name: 'Tú', image: 'images/tu.jpg', description: 'Esta es tu descripción.' }]
-        }
-      ]
-    }
+  const columns = [
+    { id: 1, title: 'Nuevo' },
+    { id: 2, title: 'Aceptado' },
+    { id: 3, title: 'Entrevista' },
+    { id: 4, title: 'Seleccionado' },
+    { id: 5, title: 'Descartado' }
   ];
 
-  useEffect(() => {
-    // Aquí puedes agregar cualquier efecto adicional que desees realizar cuando cambie el rol seleccionado.
-  }, [selectedRole]);
-
-  const handleRoleClick = (roleName) => {
-    setSelectedRole(roleName);
-  };
-
   return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '20px' }}>
-        <button
-          onClick={() => handleRoleClick('Dueña')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '20px',
-            border: 'none',
-            background: selectedRole === 'Dueña' ? '#ccc' : '#fff', // Cambiar color de fondo si es el rol seleccionado
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)',
-            marginRight: '10px'
-          }}
-        >
-          Dueña
-        </button>
-        <button
-          onClick={() => handleRoleClick('Administrador')}
-          style={{
-            padding: '10px 20px',
-            borderRadius: '20px',
-            border: 'none',
-            background: selectedRole === 'Administrador' ? '#ccc' : '#fff', // Cambiar color de fondo si es el rol seleccionado
-            boxShadow: '0 0 10px rgba(0, 0, 0, 0.2)'
-          }}
-        >
-          Administrador
-        </button>
-        {/* Agrega más botones para otros roles si es necesario */}
-      </div>
-      {selectedRole && (
-        <div>
-          <h2 style={{ textAlign: 'center' }}>Ramas para {selectedRole}</h2>
-          <BinaryTree data={rolesData.find((role) => role.name === selectedRole).children} />
-        </div>
-      )}
-    </div>
+    <Container>
+      <Board>
+        {columns.map((column) => (
+          <Column key={column.id}>
+            <ColumnHeader>
+              <span>{column.title}</span>
+              <AddButton>+ Añadir</AddButton>
+            </ColumnHeader>
+            <ColumnBody>{/* Aquí puedes agregar los elementos de cada columna */}</ColumnBody>
+          </Column>
+        ))}
+      </Board>
+    </Container>
   );
 };
 

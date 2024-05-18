@@ -21,6 +21,8 @@ import { handleInputChange, handleInputBlur } from './function.js'; // Importa l
 
 import { Delete } from '@mui/icons-material';
 import axios from 'axios';
+import { collection, doc, setDoc } from 'firebase/firestore';
+import { db } from 'api/config/configfire';
 
 const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLength, mensaje, capitalization, onChange, localbase }) => {
   //const [inputValues, setInputValues] = useState(values || Array.from({ length: number }, () => ''));
@@ -166,8 +168,17 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
       setSelectedDepartment('Seleccionar...');
       // Ocultar el campo de entrada después de guardar
       setShowCreateDepartmentInput(false);
+      const nextId = response.data.departmentId;
+      const departmentsRef = collection(db, 'Departamentos');
+      await setDoc(doc(departmentsRef, nextId.toString()), {
+        departmentId: nextId.toString(),
+        'Detalles de Departamentos': newDepartment
+      });
     } catch (error) {
       console.error('Error al guardar el nuevo departamento:', error);
+      if (error.response && error.response.data && error.response.data.error) {
+        console.log(error.response.data.error);
+      }
       // Manejar el error según sea necesario
     }
   };

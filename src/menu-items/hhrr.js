@@ -6,38 +6,38 @@ const icons = {
 
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
 
-const pages = {
+const hhrr = {
   id: 'user-management',
   title: 'Gestion HH.RR',
   caption: 'Gestion de Usuarios',
   type: 'group',
   children: [
     {
-      id: 'users',
+      id: 'reclutamiento',
       title: 'Reclutamiento',
       type: 'collapse',
       icon: icons.IconUserCheck,
 
       children: [
         {
-          id: 'call',
+          id: 'candidate',
           title: 'Candidatos',
           type: 'item',
-          url: '/users/call',
+          url: '/rrhh/candidate',
           target: false
         },
         {
           id: 'vacancies',
           title: 'Vacantes',
           type: 'item',
-          url: '/users/vacancies',
+          url: '/rrhh/vacancies',
           target: false
         },
         {
-          id: 'hire',
-          title: 'Contratar',
+          id: 'mensaje',
+          title: 'Mensaje',
           type: 'item',
-          url: '/users/hire',
+          url: '/rrhh/mensajes',
           target: false
         }
       ]
@@ -45,4 +45,4 @@ const pages = {
   ]
 };
 
-export default pages;
+export default hhrr;

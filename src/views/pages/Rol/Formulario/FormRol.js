@@ -22,13 +22,14 @@ import { useSelector } from 'react-redux';
 import { isPersonalFormFilled } from '../../CallPages/FormCall/validarTabs';
 
 import Widget from 'components/Widgett/widget';
-import { labelsDepartamento, namesDepartamento, typesDepartamento } from '../Values/variables';
-import { createDepartments } from '../Controller/departamentoController';
 
-const Departamento = () => {
+import { labelsRol, namesRol, typesRol } from '../Values/arreglo';
+import { createRol } from '../Controller/rolController';
+
+const Rol = () => {
   const customization = useSelector((state) => state.customization);
   const [activeTab, setActiveTab] = useState('vacancies');
-  const [departmentFormValues, setDepartmentsFormValues] = useState({});
+  const [rolesFormValues, setRolesFormValues] = useState({});
   const [message, setMessage] = useState('');
   const [messageType, setMessageType] = useState('');
   const [allFieldsFilled, setAllFieldsFilled] = useState(false);
@@ -67,7 +68,7 @@ const Departamento = () => {
 
   useEffect(() => {
     // Verificar si todos los campos están llenos
-    if (isPersonalFormFilled(departmentFormValues, ['0', '1'])) {
+    if (isPersonalFormFilled(rolesFormValues, ['0', '1'])) {
       // Si todos los campos están llenos, limpiar el mensaje
       setMessage('');
       setMessageType('');
@@ -75,7 +76,7 @@ const Departamento = () => {
     } else {
       setAllFieldsFilled(false);
     }
-  }, [departmentFormValues]);
+  }, [rolesFormValues]);
 
   useEffect(() => {
     const onlineHandler = () => setIsOnline(true);
@@ -133,22 +134,22 @@ const Departamento = () => {
   //FormVacantes.js
   const handleSubmit = useCallback(async () => {
     try {
-      const departmentsData = {
-        departmentName: departmentFormValues['0'] || '',
-        description: departmentFormValues['1'] || '',
-        status: departmentFormValues['2'] || ''
+      const rolesData = {
+        rolName: rolesFormValues['0'] || '',
+        description: rolesFormValues['1'] || '',
+        status: rolesFormValues['2'] || ''
       };
 
-      console.log('Datos antes de enviar:', departmentsData);
+      console.log('Datos antes de enviar:', rolesData);
 
       if (isOnline) {
         // const departmentsResponse = await axios.get('http://localhost:8080/api/departamento');
         // const departmentId = departmentsResponse.data.find(
         //   (department) => department.departmentName === vacanciesFormValues['3']
         // )?.departmentId;
-        await createDepartments({ ...departmentsData }, setDepartmentsFormValues, setMessage, setMessageType, allFieldsFilled);
+        await createRol({ ...rolesData }, setRolesFormValues, setMessage, setMessageType, allFieldsFilled);
       } else {
-        const apiResponse = await axios.post('http://localhost:8080/api/departamento', { ...departmentsData });
+        const apiResponse = await axios.post('http://localhost:8080/api/rol', { ...rolesData });
         console.log('Respuesta de la API:', apiResponse.data);
         setMessage('Datos guardados correctamente en tu API');
         setMessageType('success');
@@ -156,14 +157,14 @@ const Departamento = () => {
           setMessage('');
           setMessageType('');
         }, 8000);
-        const nextId = apiResponse.data.departmentId;
-        const departmentsRef = collection(db, 'Departamento');
+        const nextId = apiResponse.data.id;
+        const departmentsRef = collection(db, 'Rol');
         await setDoc(doc(departmentsRef, nextId.toString()), {
-          departmentId: nextId.toString(),
-          'Detalles de Departamentos': departmentsData
+          id: nextId.toString(),
+          'Detalles de Roles': rolesData
         });
       }
-      setDepartmentsFormValues({});
+      setRolesFormValues({});
     } catch (error) {
       console.error('Error al guardar los datoss:', error);
       if (error.response && error.response.data && error.response.data.error) {
@@ -175,7 +176,7 @@ const Departamento = () => {
         }, 20000);
       }
     }
-  }, [isOnline, departmentFormValues, allFieldsFilled]);
+  }, [isOnline, rolesFormValues, allFieldsFilled]);
   const isMobile = useMediaQuery('(min-width:0px) and (max-width:1536px)');
   return (
     <>
@@ -191,12 +192,12 @@ const Departamento = () => {
           </>
         )} */}
             <Tabs
-              $active={activeTab === 'vacancies'}
+              $active={activeTab === 'rol'}
               $darkMode={customization.darkMode}
-              onClick={() => setActiveTab('vacancies')}
+              onClick={() => setActiveTab('rol')}
               style={{
                 borderRadius: `${customization.borderRadius}px`,
-                backgroundColor: isPersonalFormFilled(departmentFormValues, ['0', '1'])
+                backgroundColor: isPersonalFormFilled(rolesFormValues, ['0', '1'])
                   ? customization.darkMode
                     ? '#112d15' // Modo oscuro: verde oscuro
                     : '#a4eeb9' // Modo claro: verde claro
@@ -227,7 +228,7 @@ const Departamento = () => {
             </Grid>
           )}
           <Grid container justifyContent="center" alignItems="center" marginBottom={'10px'}>
-            {activeTab === 'vacancies' ? (
+            {activeTab === 'rol' ? (
               <>
                 <Grid item xs={12} style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', marginTop: '16px' }}>
                   <ButtonSave onClick={handleSubmit}>Guardar</ButtonSave>
@@ -270,18 +271,18 @@ const Departamento = () => {
               //</Grid>
             )}
             {activeTab === 'defecto' && <></>}
-            {activeTab === 'vacancies' && (
+            {activeTab === 'rol' && (
               <>
                 <Title titulo="Información personal" />
                 <TextDinamic
                   number={2}
-                  labels={labelsDepartamento}
-                  names={namesDepartamento}
-                  types={typesDepartamento}
-                  values={Object.values(departmentFormValues)}
+                  labels={labelsRol}
+                  names={namesRol}
+                  types={typesRol}
+                  values={Object.values(rolesFormValues)}
                   capitalization="primera"
                   onChange={(newValues) => {
-                    setDepartmentsFormValues((prevValues) => ({
+                    setRolesFormValues((prevValues) => ({
                       ...prevValues,
                       ...newValues
                     }));
@@ -311,4 +312,4 @@ const Departamento = () => {
   );
 };
 
-export default Departamento;
+export default Rol;

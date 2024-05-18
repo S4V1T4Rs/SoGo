@@ -13,3 +13,9 @@ export const isLaboralFormFilled = (educateFormValues, arrays) => {
     formValues: educateFormValues
   });
 };
+export const isCuentaFormFilled = (educateFormValues, arrays) => {
+  return FormFieldsValidator({
+    fields: arrays,
+    formValues: educateFormValues
+  });
+};

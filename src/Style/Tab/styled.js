@@ -23,7 +23,7 @@ export const TabContainer = styled.div`
   /* Media query for mobile devices */
   @media (max-width: 768px) {
     display: flex;
-    width: 98%; /* Adjust width for mobile */
+    width: ${({ tamaño }) => (tamaño ? tamaño : 'auto')};
   }
 
   /* Establecer ancho fijo para cada tab */

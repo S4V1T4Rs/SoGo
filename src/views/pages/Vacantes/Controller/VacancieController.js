@@ -6,7 +6,7 @@ import { db } from 'api/config/configfire';
 import axios from 'axios';
 
 // Referencia a la colección 'usuarios'
-const usuariosRef = collection(db, 'Vancantes');
+const vacanciesRef = collection(db, 'Vancantes');
 //fireController.js
 export const isNameInUse = async (dni, usuariosRef) => {
   try {
@@ -24,7 +24,7 @@ export const isNameInUse = async (dni, usuariosRef) => {
   }
 };
 
-export const createUsuario = async (
+export const createVacancies = async (
   data,
   departmentId,
   setVacanciesFormValues,
@@ -41,9 +41,9 @@ export const createUsuario = async (
       return;
     }
     // Verificar si el DNI ya está en uso
-    const dniInUse = await isNameInUse(data.vacancyName, usuariosRef);
+    const dniInUse = await isNameInUse(data.vacancyName, vacanciesRef);
     if (dniInUse) {
-      setMessage('El número de DNI ya está en uso.');
+      setMessage('Ya existe ese nombre de la vacante');
       setMessageType('error');
       setTimeout(() => {
         setMessage('');
@@ -67,11 +67,11 @@ export const createUsuario = async (
     // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
 
     // Obtener el ID generado por la API
-    const nextId = apiData.vacancyId;
+    const nextId = apiData.id;
 
     // Crear el objeto userData con los datos del usuario
     const userData = {
-      vacancyId: nextId.toString(),
+      id: nextId.toString(),
       'Detalles de Vacantes': {
         vacancyName: data.vacancyName,
         description: data.description,
@@ -84,8 +84,8 @@ export const createUsuario = async (
     };
 
     // Guardar el documento en Firestore con el ID generado por la API
-    await setDoc(doc(usuariosRef, nextId.toString()), {
-      vacancyId: nextId.toString(),
+    await setDoc(doc(vacanciesRef, nextId.toString()), {
+      id: nextId.toString(),
       'Detalles de Vacantes': userData['Detalles de Vacantes']
     });
 
@@ -118,16 +118,16 @@ export const createUsuario = async (
 };
 
 // Función para obtener todos los documentos de la colección 'usuarios'
-export const getVacantes = async () => {
+export const getVacancies = async () => {
   try {
-    const querySnapshot = await getDocs(usuariosRef);
+    const querySnapshot = await getDocs(vacanciesRef);
     const users = [];
     const apiResponse = await axios.get(`http://localhost:8080/api/vacante`);
     console.log('Response from API Update:', apiResponse.data);
     querySnapshot.forEach((doc) => {
       const userData = doc.data();
       // Assign unique identifier to each user
-      userData.vacancyId = doc.vacancyId;
+      userData.id = doc.id;
       users.push(userData);
     });
     return users;
@@ -137,23 +137,23 @@ export const getVacantes = async () => {
   }
 };
 
-export const updateUsuario = async (docId, data, datafire) => {
+export const updateVacancies = async (docId, data, datafire) => {
   try {
     // Realizar la solicitud de actualización a través de Axios
-    const apiResponse = await axios.put(`http://localhost:8080/api/call/${docId}`, { ...data });
+    const apiResponse = await axios.put(`http://localhost:8080/api/vacante/${docId}`, { ...data });
     console.log('Response from API Update:', apiResponse.data);
 
     // Verificar si la actualización en la API fue exitosa
     if (apiResponse.status === 200) {
       // Obtener el documento actual de Firestore
-      const usuarioDoc = await getDoc(doc(usuariosRef, docId));
+      const usuarioDoc = await getDoc(doc(vacanciesRef, docId));
       if (usuarioDoc.exists()) {
         // Actualizar solo los campos relevantes en Firestore
         const newData = {
-          'Datos Personales': datafire['Datos Personales'],
-          'Datos Laborales': datafire['Datos Laborales']
+          'Detalles de Vacantes': datafire['Detalles de Vacantes']
         };
-        await updateDoc(doc(usuariosRef, docId), newData);
+        await updateDoc(doc(vacanciesRef, docId), newData);
+        console.log(updateDoc);
         console.log('Document successfully updated in Firestore');
         return apiResponse.data;
       } else {
@@ -170,9 +170,9 @@ export const updateUsuario = async (docId, data, datafire) => {
 };
 
 // Función para eliminar un documento en Firestore
-export const deleteUsuario = async (docId) => {
+export const deleteVacancies = async (docId) => {
   try {
-    await deleteDoc(doc(usuariosRef, docId));
+    await deleteDoc(doc(vacanciesRef, docId));
     console.log('Document successfully deleted');
   } catch (error) {
     console.error('Error deleting document:', error);

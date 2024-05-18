@@ -9,11 +9,12 @@ const IpDect = Loadable(lazy(() => import('components/IP/DetectorIp')));
 const FormCall = Loadable(lazy(() => import('views/pages/CallPages/FormCall/FormCallDocs')));
 const TaxData = Loadable(lazy(() => import('views/pages/authentication/authentication3/Login3')));
 const PageDepartamento = Loadable(lazy(() => import('views/pages/Departamento/Formulario/FormDepartamento')));
+const Xc = Loadable(lazy(() => import('views/pages/Rol/Formulario/FormRol')));
 // const FormHire = Loadable(lazy(() => import('views/pages/Rol/rol')));
 
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
-const AuthenticationRoutes = {
+const AdminRoutes = {
   path: '/',
   element: <MainLayout />,
   children: [
@@ -34,6 +35,10 @@ const AuthenticationRoutes = {
       element: <FormCall />
     },
     {
+      path: '/admin/rolepermison',
+      element: <Xc />
+    },
+    {
       path: '/config/datos-de-la-empresa',
       element: <TaxData />
     },
@@ -48,4 +53,4 @@ const AuthenticationRoutes = {
   ]
 };
 
-export default AuthenticationRoutes;
+export default AdminRoutes;

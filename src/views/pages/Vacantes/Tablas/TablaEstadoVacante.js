@@ -2,11 +2,10 @@ import React, { useEffect, useState } from 'react';
 /**/
 
 import { Grid, Typography } from '@mui/material';
-import { getVacantes } from 'api/Controller/VacancieController';
+import { getVacancies } from 'views/pages/Vacantes/Controller/VacancieController';
 import { FormContent } from 'Style/Tab/styled';
 import { useSelector } from 'react-redux';
 import { SketchPicker } from 'react-color';
-import { getUsuarios } from 'api/Controller/fireController';
 import {
   BackButton,
   Card,
@@ -18,7 +17,7 @@ import {
   ProgressText,
   StyledButton,
   StyledInput
-} from './Styled';
+} from './Styledss';
 
 // function hexToRgb(hex) {
 //   if (!hex.startsWith('#')) return null;
@@ -45,7 +44,7 @@ const TableVacancie = () => {
   useEffect(() => {
     const fetchVacanciesData = async () => {
       try {
-        const data = await getUsuarios();
+        const data = await getVacancies();
         setCandidatesData(data);
       } catch (error) {
         console.error('Error fetching vacancies data:', error);
@@ -83,7 +82,7 @@ const TableVacancie = () => {
   useEffect(() => {
     const fetchVacanciesData = async () => {
       try {
-        const data = await getVacantes();
+        const data = await getVacancies();
         setVacanciesData(data);
         const savedColors = JSON.parse(localStorage.getItem('vacancyColors')) || {};
         setVacancyColors(savedColors);
@@ -289,43 +288,26 @@ const TableVacancie = () => {
 
       {showTablas && (
         <Container>
-          <Grid container spacing={2} justifyContent="center">
-            <Grid item xs={12}>
-              <BackButton variant="contained" onClick={() => setShowTablas(false)}>
-                Regresar
-              </BackButton>
-            </Grid>
-            {selectedVacancy &&
-              Object.keys(vacancyColors[selectedVacancy] || {}).map((status, index) => (
-                <Grid item xs={12} sm={6} md={4} lg={3} key={index}>
-                  <Card buttonColor={vacancyColors[selectedVacancy]?.[status]}>
+          <Grid container spacing={2}>
+            <>
+              <Grid item xs={12}>
+                <BackButton variant="contained" onClick={() => setShowTablas(false)}>
+                  Regresar
+                </BackButton>
+              </Grid>
+
+              {selectedVacancy &&
+                Object.keys(vacancyColors[selectedVacancy] || {}).map((status, index) => (
+                  <Card buttonColor={vacancyColors[selectedVacancy]?.[status]} key={index}>
                     <div className="header">
                       <h2>{status}</h2>
                       <StyledButton color={vacancyColors[selectedVacancy]?.[status]}>+ Añadir</StyledButton>
                     </div>
-                    {status === 'Nuevo' &&
-                      selectedCardName === 'Nuevo' && ( // Verificar si el estado es "Nuevo"
-                        <>
-                          {candidatesData.map((candidate, index) => (
-                            <Card key={index}>
-                              <div className="header">
-                                <h2>
-                                  {candidate['Datos Personales']?.Nombre} {candidate['Datos Personales']?.Apellido}
-                                </h2>
-                              </div>
-                              <div className="content">
-                                <p>Tipo de Documento: {candidate['Datos Personales']?.TipoDocumento}</p>
-                                <p>Número de Documento: {candidate['Datos Personales']?.NumeroDocumento}</p>
-                                {/* Mostrar más información del candidato si es necesario */}
-                              </div>
-                            </Card>
-                          ))}
-                        </>
-                      )}
+
                     <div className="content">0</div>
                   </Card>
-                </Grid>
-              ))}
+                ))}
+            </>
           </Grid>
         </Container>
       )}

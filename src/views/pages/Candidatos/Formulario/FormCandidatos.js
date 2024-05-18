@@ -12,20 +12,32 @@ import { FormContent, Labels, MessageCard, TabContainer, Tabs } from 'Style/Tab/
 
 // import axios from 'axios';
 
-import { createUsuario } from 'api/Controller/fireController';
 import { Conecction } from 'components/ButtonDB/ButtonConection';
 import { collection, doc, setDoc } from 'firebase/firestore';
 import { db } from 'api/config/configfire';
-import { calculateAge } from '../CallPages/FormCall/validaciones';
-import { labelsLaboral, labelsPersonal, namesLaboral, namesPersonal, typesLaboral, typesPersonal } from '../CallPages/FormCall/variables';
-import { isPersonalFormFilled, isLaboralFormFilled } from '../CallPages/FormCall/validarTabs';
-import UserTable from '../CallPages/ListCall/listCall';
+import { calculateAge } from '../../CallPages/FormCall/validaciones';
+import {
+  labelsCuenta,
+  labelsLaboral,
+  labelsPersonal,
+  namesCuenta,
+  namesLaboral,
+  namesPersonal,
+  typesCuenta,
+  typesLaboral,
+  typesPersonal
+} from '../../Candidatos/Values/variables';
+import { isPersonalFormFilled, isLaboralFormFilled, isCuentaFormFilled } from '../../CallPages/FormCall/validarTabs';
+import { createCandidates } from '../Controller/CandidateController';
+import UserTable from '../Tablas/Desktop/TablaCandidato';
+import { StyleSheetManager } from 'styled-components';
 // import { isDniInUse } from 'api/Controller/validaciones';
 
 const TaxData = () => {
   const [activeTab, setActiveTab] = useState('personal');
   const [personalFormValues, setPersonalFormValues] = useState({});
   const [laboralFormValues, setLaboralFormValues] = useState({});
+  const [cuentaFormValues, setCuentaFormValues] = useState({});
   //const [age] = useState('');
   // const [isLocalDatabaseActive, setLocalDatabaseActive] = useState(false);
   const [message, setMessage] = useState('');
@@ -41,7 +53,7 @@ const TaxData = () => {
     const checkServerStatus = async () => {
       try {
         // Realiza una petición al servidor para verificar si está activo
-        const response = await axios.get('http://localhost:8080/api/call');
+        const response = await axios.get('http://localhost:8080/api/candidato');
         if (response.status === 200) {
           // Si el servidor responde correctamente, lo marcamos como activo
           setServerActive(true);
@@ -67,7 +79,8 @@ const TaxData = () => {
     // Verificar si todos los campos están llenos
     if (
       isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6']) &&
-      isLaboralFormFilled(laboralFormValues, ['0', '1', '2', '3'])
+      isLaboralFormFilled(laboralFormValues, ['0', '1', '2']) &&
+      isCuentaFormFilled(cuentaFormValues, ['0', '1'])
     ) {
       // Si todos los campos están llenos, limpiar el mensaje
       setMessage('');
@@ -76,7 +89,7 @@ const TaxData = () => {
     } else {
       setAllFieldsFilled(false);
     }
-  }, [personalFormValues, laboralFormValues]);
+  }, [personalFormValues, laboralFormValues, cuentaFormValues]);
 
   useEffect(() => {
     const onlineHandler = () => {
@@ -139,11 +152,11 @@ const TaxData = () => {
   //   }
   // }, [connectionButtonClicked, message]);
 
-  //FormCallDos.js
+  //FormCaDos.js
   const handleSubmit = async () => {
     try {
       // Referencia a la colección 'usuarios'
-      const usuariosRef = collection(db, 'usuarios');
+      const candidatoRef = collection(db, 'Candidato');
       // Comprobación de valores personalFormValues y laboralFormValues
       if (!personalFormValues || !laboralFormValues) {
         console.error('Los valores personalFormValues o laboralFormValues son undefined.');
@@ -152,27 +165,35 @@ const TaxData = () => {
 
       const age = calculateAge(personalFormValues['4']);
       const personalData = {
-        Nombre: personalFormValues['0'] || '',
-        Apellido: personalFormValues['1'] || '',
-        TipoDocumento: personalFormValues['2'] || '',
-        NumeroDocumento: personalFormValues['3'] || '',
-        FechaNacimiento: personalFormValues['4'] || '',
-        Género: personalFormValues['5'] || '',
-        Edad: age.toString()
+        firstName: personalFormValues['0'] || '',
+        lastName: personalFormValues['1'] || '',
+        documentType: personalFormValues['2'] || '',
+        documentNumber: personalFormValues['3'] || '',
+        birthDate: personalFormValues['4'] || '',
+        gender: personalFormValues['5'] || '',
+        phone: personalFormValues['6'] || '',
+        ages: age.toString()
       };
       const laboralData = {
-        Empresa: laboralFormValues['0'] || '',
-        Cargo: laboralFormValues['1'] || '',
-        InicioTrabajo: laboralFormValues['2'] || '',
-        Salario: laboralFormValues['3'] || ''
+        salaryExpectation: laboralFormValues['0'] || '',
+        experience: laboralFormValues['1'] || '',
+        position: laboralFormValues['2'] || ''
+        // cv: laboralFormValues['3'] || '',
+        // photo: laboralFormValues['3'] || ''
+      };
+
+      const cuentaData = {
+        email: cuentaFormValues['0'] || '',
+        password: cuentaFormValues['1'] || ''
       };
 
       // Si hay conexión a internet, guardar los datos en Firestore y en tu API
       if (isOnline) {
-        await createUsuario(
-          { ...personalData, ...laboralData },
+        await createCandidates(
+          { ...personalData, ...laboralData, ...cuentaData },
           setPersonalFormValues,
           setLaboralFormValues,
+          setCuentaFormValues,
           setMessage,
           setMessageType,
           allFieldsFilled
@@ -180,9 +201,10 @@ const TaxData = () => {
       } else {
         // Verificar si el DNI ya está en uso
         // Si no hay conexión a internet, guardar los datos solo en tu API
-        const apiResponse = await axios.post('http://localhost:8080/api/call', {
+        const apiResponse = await axios.post('http://localhost:8080/api/candidato', {
           ...personalData,
-          ...laboralData
+          ...laboralData,
+          ...cuentaData
         });
 
         // Manejar la respuesta de la API según sea necesario
@@ -199,12 +221,13 @@ const TaxData = () => {
         // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
 
         // Obtener el ID generado por la API
-        const nextId = apiData.idCall;
+        const nextId = apiData.id;
         // Guardar el documento en Firestore
-        await setDoc(doc(usuariosRef, nextId.toString()), {
+        await setDoc(doc(candidatoRef, nextId.toString()), {
           id: nextId.toString(),
           'Datos Personales': personalData,
-          'Datos Laborales': laboralData
+          'Datos Laborales': laboralData,
+          ' Cuenta ': cuentaData
         });
       }
 
@@ -248,38 +271,50 @@ const TaxData = () => {
     <>
       <Grid container sx={{ display: 'flex', justifyContent: 'center' }}>
         <Grid item xs={12} md={11} xl={1}>
-          <TabContainer mobile={isMobile}>
-            {/* {isMobile && ( // Oculta los Tabs en modo móvil
-          <>  
-            <Tabs $active={activeTab === 'defecto'} onClick={() => setActiveTab('defecto')}>
-              <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels>defecto</Labels>
-            </Tabs>
-          </>
-        )} */}
-            <Tabs
-              $active={activeTab === 'personal'}
-              onClick={() => setActiveTab('personal')}
-              style={{
-                backgroundColor: isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6']) ? '#d1ead1' : 'initial'
-              }}
-            >
-              <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels>Personal</Labels>
-            </Tabs>
-            <Tabs
-              $active={activeTab === 'laboral'}
-              onClick={() => setActiveTab('laboral')}
-              style={{ backgroundColor: isLaboralFormFilled(laboralFormValues, ['0', '1', '2', '3']) ? '#d1ead1' : 'initial' }}
-            >
-              <Avatar src={user} sx={{ marginBottom: '10px' }} />
-              <Labels>Laboral</Labels>
-            </Tabs>
-            <Tabs $active={activeTab === 'table'} onClick={() => setActiveTab('table')}>
-              <Avatar src={table} sx={{ marginBottom: '10px' }} />
-              <Labels>Tabla</Labels>
-            </Tabs>
-          </TabContainer>
+          <StyleSheetManager shouldForwardProp={(prop) => prop !== 'tamaño'}>
+            <TabContainer mobile={isMobile} tamaño={'87%'}>
+              {isMobile && ( // Oculta los Tabs en modo móvil
+                <>
+                  <Tabs $active={activeTab === 'defecto'} onClick={() => setActiveTab('defecto')}>
+                    <Avatar src={user} sx={{ marginBottom: '10px' }} />
+                    <Labels>defecto</Labels>
+                  </Tabs>
+                </>
+              )}
+              <Tabs
+                $active={activeTab === 'personal'}
+                onClick={() => setActiveTab('personal')}
+                style={{
+                  backgroundColor: isPersonalFormFilled(personalFormValues, ['0', '1', '2', '3', '4', '5', '6', '7'])
+                    ? '#d1ead1'
+                    : 'initial'
+                }}
+              >
+                <Avatar src={user} sx={{ marginBottom: '10px' }} />
+                <Labels>Personal</Labels>
+              </Tabs>
+              <Tabs
+                $active={activeTab === 'laboral'}
+                onClick={() => setActiveTab('laboral')}
+                style={{ backgroundColor: isLaboralFormFilled(laboralFormValues, ['0', '1', '2']) ? '#d1ead1' : 'initial' }}
+              >
+                <Avatar src={user} sx={{ marginBottom: '10px' }} />
+                <Labels>Laboral</Labels>
+              </Tabs>
+              <Tabs
+                $active={activeTab === 'crearcuenta'}
+                onClick={() => setActiveTab('crearcuenta')}
+                style={{ backgroundColor: isCuentaFormFilled(cuentaFormValues, ['0', '1']) ? '#d1ead1' : 'initial' }}
+              >
+                <Avatar src={user} sx={{ marginBottom: '10px' }} />
+                <Labels>Crear Cuenta</Labels>
+              </Tabs>
+              <Tabs $active={activeTab === 'table'} onClick={() => setActiveTab('table')}>
+                <Avatar src={table} sx={{ marginBottom: '10px' }} />
+                <Labels>Tabla</Labels>
+              </Tabs>
+            </TabContainer>
+          </StyleSheetManager>
           {useMediaQuery('(max-width:600px)') && (
             <Grid item xs={12} md={2}>
               {' '}
@@ -336,7 +371,7 @@ const TaxData = () => {
               <>
                 <Title titulo="Información personal" />
                 <TextDinamic
-                  number={7}
+                  number={8}
                   labels={labelsPersonal}
                   names={namesPersonal}
                   types={typesPersonal}
@@ -360,7 +395,7 @@ const TaxData = () => {
               <>
                 <Title titulo="Información Laboral" />
                 <TextDinamic
-                  number={4}
+                  number={5}
                   labels={labelsLaboral}
                   names={namesLaboral}
                   types={typesLaboral}
@@ -369,6 +404,25 @@ const TaxData = () => {
                   capitalization="primera"
                   onChange={(newValues) => {
                     setLaboralFormValues({ ...laboralFormValues, ...newValues });
+                    // setFormData({ ...formData, newValues });
+                  }}
+                  localbase={(!isOnline && !isLocalDatabaseActive) || !serverActive}
+                />
+              </>
+            )}
+            {activeTab === 'crearcuenta' && (
+              <>
+                <Title titulo="Crear Cuenta" />
+                <TextDinamic
+                  number={2}
+                  labels={labelsCuenta}
+                  names={namesCuenta}
+                  types={typesCuenta}
+                  values={Object.values(cuentaFormValues)}
+                  // values={Object.values(laboralFormValues || formData.Empresa, formData.Cargo, formData.InicioTrabajo, formData.Salario)}
+                  capitalization="primera"
+                  onChange={(newValues) => {
+                    setCuentaFormValues({ ...cuentaFormValues, ...newValues });
                     // setFormData({ ...formData, newValues });
                   }}
                   localbase={(!isOnline && !isLocalDatabaseActive) || !serverActive}

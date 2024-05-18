@@ -22,8 +22,8 @@ import { db } from 'api/config/configfire';
 import { useSelector } from 'react-redux';
 import { isPersonalFormFilled } from '../../CallPages/FormCall/validarTabs';
 
-import { createUsuario } from 'api/Controller/VacancieController';
-import TableVacancie from '../Tablas/TablaEstadoVacante';
+import { createVacancies } from 'views/pages/Vacantes/Controller/VacancieController';
+import UserTable from '../Tablas/Desktop/TablaVacante';
 
 const Vancancies = () => {
   const customization = useSelector((state) => state.customization);
@@ -149,7 +149,7 @@ const Vancancies = () => {
         const departmentId = departmentsResponse.data.find(
           (department) => department.departmentName === vacanciesFormValues['3']
         )?.departmentId;
-        await createUsuario({ ...vacanciesData }, departmentId, setVacanciesFormValues, setMessage, setMessageType, allFieldsFilled);
+        await createVacancies({ ...vacanciesData }, departmentId, setVacanciesFormValues, setMessage, setMessageType, allFieldsFilled);
       } else {
         const apiResponse = await axios.post('http://localhost:8080/api/vacante', { ...vacanciesData });
         console.log('Respuesta de la API:', apiResponse.data);
@@ -298,7 +298,8 @@ const Vancancies = () => {
               <>
                 <Grid item xs={12} md={12}>
                   <>
-                    <TableVacancie />
+                    {/* <TableVacancie /> */}
+                    <UserTable />
                   </>
                 </Grid>
               </>

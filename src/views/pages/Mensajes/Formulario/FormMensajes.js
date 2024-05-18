@@ -25,7 +25,7 @@ import Widget from 'components/Widgett/widget';
 import { labelsDepartamento, namesDepartamento, typesDepartamento } from '../Values/variables';
 import { createDepartments } from '../Controller/departamentoController';
 
-const Departamento = () => {
+const Mensajes = () => {
   const customization = useSelector((state) => state.customization);
   const [activeTab, setActiveTab] = useState('vacancies');
   const [departmentFormValues, setDepartmentsFormValues] = useState({});
@@ -311,4 +311,4 @@ const Departamento = () => {
   );
 };
 
-export default Departamento;
+export default Mensajes;

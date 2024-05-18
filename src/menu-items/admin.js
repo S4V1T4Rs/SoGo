@@ -53,7 +53,7 @@ const admin = {
       id: 'rope',
       title: 'Roles y Permisos',
       type: 'item',
-      url: '/admin/xd',
+      url: '/admin/rolepermison',
       icon: icons.IconKey
     },
     {

@@ -1,13 +1,14 @@
 import dashboard from './dashboard';
-import call from './user';
+import hhrr from './hhrr';
 import admin from './admin';
+import cuenta from './cuenta';
 //import utilities from './utilities';
 //import other from './other';
 
 // ==============================|| MENU ITEMS ||============================== //
 
 const menuItems = {
-  items: [dashboard, admin, call]
+  items: [dashboard, admin, hhrr, cuenta]
 };
 
 export default menuItems;

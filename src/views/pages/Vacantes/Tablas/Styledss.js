@@ -79,11 +79,11 @@ function hexToRgb(hex) {
 }
 
 export const Container = styled.div`
+  position: relative;
   display: flex;
   flex-wrap: wrap;
   justify-content: space-between;
   padding: 1rem;
-  gap: 1rem;
 
   @media (max-width: 600px) {
     justify-content: center;
@@ -91,11 +91,13 @@ export const Container = styled.div`
 `;
 
 export const Card = styled.div`
-  flex: 1;
-  min-width: 200px;
-  max-width: 300px;
+  position: relative;
+  min-width: 261px;
+  max-width: 350px;
   padding: 1rem;
   margin-bottom: 1rem;
+  margin-top: 2rem;
+  margin-left: 1rem;
   border: 1px solid ${(props) => props.buttonColor};
   border-radius: 0.5rem;
 
