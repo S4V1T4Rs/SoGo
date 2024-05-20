@@ -1,4 +1,4 @@
 //arreglos.js
-export const labelsMensaje = ['Nombre de Departamento', 'Descripcion'];
-export const namesMensaje = ['departmentName', 'decripction', 'state'];
-export const typesMensaje = ['text', 'text'];
+export const labelsMensaje = ['Destinatario', 'Descripcion', 'Estado'];
+export const namesMensaje = ['addressee', 'decription', 'state'];
+export const typesMensaje = ['select-email', 'text', 'text'];

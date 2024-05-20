@@ -8,7 +8,7 @@ import MainLayout from 'layout/MainLayout';
 // const FormCall = Loadable(lazy(() => import('views/pages/CallPages/FormCall/FormCallDocs')));
 const FormCandidatos = Loadable(lazy(() => import('views/pages/Candidatos/Formulario/FormCandidatos')));
 const FormVancancies = Loadable(lazy(() => import('views/pages/Vacantes/Formulario/FormVacantes')));
-
+const FormMensaje = Loadable(lazy(() => import('views/pages/Mensajes/Formulario/FormMensajes')));
 // ==============================|| AUTHENTICATION ROUTING ||============================== //
 
 const HHRRRoutes = {
@@ -25,7 +25,7 @@ const HHRRRoutes = {
     },
     {
       path: '/rrhh/mensajes',
-      element: <FormVancancies />
+      element: <FormMensaje />
     }
   ]
 };

@@ -19,6 +19,7 @@
     "apexcharts": "^3.45.2",
     "axios": "^1.6.8",
     "dexie": "^3.2.6",
+    "emailjs-com": "^3.2.0",
     "firebase": "^10.9.0",
     "formik": "^2.4.5",
     "framer-motion": "^11.0.3",

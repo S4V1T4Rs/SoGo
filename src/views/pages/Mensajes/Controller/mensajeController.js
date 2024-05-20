@@ -6,7 +6,7 @@ import { db } from 'api/config/configfire';
 import axios from 'axios';
 
 // Referencia a la colección 'usuarios'
-const departamentosRef = collection(db, 'Departamentos');
+const mensajeRef = collection(db, 'Mensaje');
 //fireController.js
 // export const isNameInUse = async (dni, departamentosRef) => {
 //   try {
@@ -24,7 +24,7 @@ const departamentosRef = collection(db, 'Departamentos');
 //   }
 // };
 
-export const createDepartments = async (
+export const createMensaje = async (
   data,
   //   departmentId,
   setDepartmentFormValues,
@@ -58,7 +58,7 @@ export const createDepartments = async (
     // }
 
     // Guardar el usuario en la base de datos de la API
-    const apiResponse = await axios.post('http://localhost:8080/api/departamento', {
+    const apiResponse = await axios.post('http://localhost:8080/api/mensaje', {
       ...data
       //   departmentId: departmentId
     });
@@ -67,22 +67,22 @@ export const createDepartments = async (
     // Si no hay conexión a Internet, mostrar mensaje y limpiar campos
 
     // Obtener el ID generado por la API
-    const nextId = apiData.departmentId;
+    const nextId = apiData.id;
 
     // Crear el objeto userData con los datos del usuario
-    const departmentData = {
-      departmentId: nextId.toString(),
-      'Detalles de Departamentos': {
-        departmentName: data.departmentName,
+    const mensajeData = {
+      id: nextId.toString(),
+      'Detalles de Mensajes': {
+        addressee: data.addressee,
         description: data.description,
         status: data.status
       }
     };
 
     // Guardar el documento en Firestore con el ID generado por la API
-    await setDoc(doc(departamentosRef, nextId.toString()), {
-      departmentId: nextId.toString(),
-      'Detalles de Departamentos': departmentData['Detalles de Departamentos']
+    await setDoc(doc(mensajeRef, nextId.toString()), {
+      id: nextId.toString(),
+      'Detalles de Mensajes': mensajeData['Detalles de Mensajes']
     });
 
     // Manejar la respuesta de la API según sea necesario
@@ -114,41 +114,41 @@ export const createDepartments = async (
 };
 
 // Función para obtener todos los documentos de la colección 'usuarios'
-export const getDepartments = async () => {
+export const getMensaje = async () => {
   try {
-    const querySnapshot = await getDocs(departamentosRef);
-    const departments = [];
-    const apiResponse = await axios.get(`http://localhost:8080/api/departamento`);
+    const querySnapshot = await getDocs(mensajeRef);
+    const mensajes = [];
+    const apiResponse = await axios.get(`http://localhost:8080/api/mensaje`);
     console.log('Response from API Update:', apiResponse.data);
     querySnapshot.forEach((doc) => {
-      const departmentData = doc.data();
+      const mensajeData = doc.data();
       // Assign unique identifier to each user
-      departmentData.departmentId = doc.departmentId;
-      departments.push(departmentData);
+      mensajeData.id = doc.id;
+      mensajes.push(mensajeData);
     });
-    return departments;
+    return mensajes;
   } catch (error) {
     console.error('Error getting documents:', error);
     throw error;
   }
 };
 
-export const updateDepartments = async (docId, data, datafire) => {
+export const updateMensaje = async (docId, data, datafire) => {
   try {
     // Realizar la solicitud de actualización a través de Axios
-    const apiResponse = await axios.put(`http://localhost:8080/api/departamento/${docId}`, { ...data });
+    const apiResponse = await axios.put(`http://localhost:8080/api/mensaje/${docId}`, { ...data });
     console.log('Response from API Update:', apiResponse.data);
 
     // Verificar si la actualización en la API fue exitosa
     if (apiResponse.status === 200) {
       // Obtener el documento actual de Firestore
-      const departmentsDoc = await getDoc(doc(departamentosRef, docId));
-      if (departmentsDoc.exists()) {
+      const mensajesDoc = await getDoc(doc(mensajeRef, docId));
+      if (mensajesDoc.exists()) {
         // Actualizar solo los campos relevantes en Firestore
         const newData = {
-          'Detalles de Departamentos': datafire['Detalles de Departamentos']
+          'Detalles de Mensajes': datafire['Detalles de Departamentos']
         };
-        await updateDoc(doc(departamentosRef, docId), newData);
+        await updateDoc(doc(mensajeRef, docId), newData);
         console.log('Document successfully updated in Firestore');
         return apiResponse.data;
       } else {
@@ -165,9 +165,9 @@ export const updateDepartments = async (docId, data, datafire) => {
 };
 
 // Función para eliminar un documento en Firestore
-export const deleteUsuario = async (docId) => {
+export const deleteMensaje = async (docId) => {
   try {
-    await deleteDoc(doc(departamentosRef, docId));
+    await deleteDoc(doc(mensajeRef, docId));
     console.log('Document successfully deleted');
   } catch (error) {
     console.error('Error deleting document:', error);

@@ -164,7 +164,7 @@ const UserTable = () => {
 
         const newData = {
           ' Estado ': {
-            ...updatedDocSnapshot.data()[' Estado '],
+            ...updatedDocSnapshot.data[' Estado '],
             selectVacancies: vacancyName,
             selectionStatus: selectionStatus,
             selectRol: rolName

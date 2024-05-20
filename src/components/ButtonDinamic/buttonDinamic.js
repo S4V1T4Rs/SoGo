@@ -129,6 +129,7 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
   const [showCreateDepartmentInput, setShowCreateDepartmentInput] = useState(false);
   const [newDepartmentName, setNewDepartmentName] = useState('');
   const [selectedDepartment, setSelectedDepartment] = useState('Seleccionar...');
+  const [emails, setEmails] = useState([]);
   useEffect(() => {
     const fetchDepartments = async () => {
       try {
@@ -141,7 +142,19 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
 
     fetchDepartments();
   }, []);
+  useEffect(() => {
+    const fetchEmails = async () => {
+      try {
+        const response = await axios.get('http://localhost:8080/api/candidato');
+        const emailsArray = response.data.map((candidato) => candidato.email); // Extraer solo los correos electrónicos
+        setEmails(emailsArray);
+      } catch (error) {
+        console.error('Error fetching emails:', error);
+      }
+    };
 
+    fetchEmails();
+  }, []);
   // Dentro del componente, actualiza el estado del departamento seleccionado
   useEffect(() => {
     // Actualiza el estado interno del componente con el nuevo valor del departamento seleccionado
@@ -223,7 +236,26 @@ const TextDinamic = ({ number, labels, values, names, types, placeholders, maxLe
         <InputContainer key={index}>
           <Label>{labels && labels[index] ? labels[index] : ''}</Label>
           <StyleSheetManager shouldForwardProp={(prop) => prop !== 'fullwidth'}>
-            {types && types[index] === 'select-departament' ? (
+            {types && types[index] === 'select-email' ? (
+              <StyledSelect
+                fullwidth={true}
+                ref={inputRefs.current[index]}
+                name={names && names[index] ? names[index] : ''}
+                value={inputValues[index]}
+                error={inputErrors[index]}
+                onBlur={() => handleInputBlurWrapper(index)}
+                onChange={(e) => handleInputChangeWrapper(index, e.target.value)}
+                disabled={localbase}
+              >
+                <option value="">Seleccionar...</option>
+                {/* Mapear sobre la lista de correos electrónicos para crear opciones */}
+                {emails.map((email, i) => (
+                  <option key={i} value={email}>
+                    {email}
+                  </option>
+                ))}
+              </StyledSelect>
+            ) : types && types[index] === 'select-departament' ? (
               <>
                 <StyledInput
                   fullwidth={true}
