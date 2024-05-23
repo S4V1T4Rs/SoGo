@@ -98,13 +98,14 @@ const UserTable = () => {
       initialChanges[user.id] = {
         'Datos Personales': { ...user['Datos Personales'] },
         'Datos Laborales': { ...user['Datos Laborales'] },
-        ' Cuenta ': { ...user[' Cuenta '] }
+        ' Cuenta ': { ...user[' Cuenta '] },
+        ' Estado ': { ...user[' Estado '] }
       };
     });
     setPendingChanges(initialChanges);
   };
 
-  const handleInputChange = async (e, field, userId) => {
+  const handleInputChange = (e, field, userId) => {
     const newValue = e.target.value;
 
     setPendingChanges((prevChanges) => ({
@@ -118,25 +119,20 @@ const UserTable = () => {
         ['Datos Laborales']: {
           ...(prevChanges[userId]?.['Datos Laborales'] || users.find((user) => user.id === userId)['Datos Laborales']),
           [field]: newValue
-          //vacancyName: field === 'selectionStatus' ? newValue : prevChanges[userId]?.['Datos Laborales'].vacancyName
-
-          // Include laboral data fields here if you also need to edit them
         },
         [' Cuenta ']: {
           ...(prevChanges[userId]?.[' Cuenta '] || users.find((user) => user.id === userId)[' Cuenta ']),
           [field]: newValue
-          // Include laboral data fields here if you also need to edit them
         },
         [' Estado ']: {
           ...(prevChanges[userId]?.[' Estado '] || users.find((user) => user.id === userId)[' Estado ']),
           [field]: newValue
-          // Include laboral data fields here if you also need to edit them
         }
       }
     }));
 
-    if (field === 'selectVacancies' || field === 'selectionStatus' || field === 'selectRol') {
-      const estado = pendingChanges[userId][' Estado '];
+    if (['selectVacancies', 'selectionStatus', 'selectRol'].includes(field)) {
+      const estado = pendingChanges[userId]?.[' Estado '] || users.find((user) => user.id === userId)[' Estado '];
       if (estado) {
         const vacancyName = field === 'selectVacancies' ? newValue : estado.selectVacancies;
         const selectionStatus = field === 'selectionStatus' ? newValue : estado.selectionStatus;
@@ -145,6 +141,7 @@ const UserTable = () => {
       }
     }
   };
+
   const saveSelection = async (userId, vacancyName, selectionStatus, rolName) => {
     try {
       // Actualizar estado de selección en la API
@@ -162,12 +159,13 @@ const UserTable = () => {
       if (updatedDocSnapshot.exists()) {
         console.log('Document data in Firestore before update:', updatedDocSnapshot.data());
 
+        // Verificar que los valores no sean undefined antes de actualizar
         const newData = {
           ' Estado ': {
-            ...updatedDocSnapshot.data[' Estado '],
-            selectVacancies: vacancyName,
-            selectionStatus: selectionStatus,
-            selectRol: rolName
+            ...updatedDocSnapshot.data()[' Estado '],
+            ...(vacancyName !== undefined && { selectVacancies: vacancyName }),
+            ...(selectionStatus !== undefined && { selectionStatus: selectionStatus }),
+            ...(rolName !== undefined && { selectRol: rolName })
           }
         };
         await updateDoc(candidateDocRef, newData);
@@ -180,6 +178,7 @@ const UserTable = () => {
       throw error;
     }
   };
+
   const handleTypeChange = (event) => {
     setSelectedType(event.target.value);
   };
@@ -443,7 +442,7 @@ const UserTable = () => {
                       </NeumorphicTableHeaderCell>
                       <NeumorphicTableHeaderCell
                         style={{ width: columnWidths['password'] }}
-                        onMouseDown={(e) => handleColumnResizeStart('experience', e.pageX, e.pageY)}
+                        onMouseDown={(e) => handleColumnResizeStart('password', e.pageX, e.pageY)}
                       >
                         Password
                       </NeumorphicTableHeaderCell>
@@ -658,7 +657,7 @@ const UserTable = () => {
                                 </StyledSelect>
                               </NeumorphicTableCell>
 
-                              <NeumorphicTableCell>
+                              {/* <NeumorphicTableCell>
                                 <StyledSelect
                                   value={pendingChanges[user.id]?.[' Estado ']?.selectRol || user[' Estado '].selectRol}
                                   onChange={(e) => handleInputChange(e, 'selectRol', user.id)}
@@ -670,6 +669,19 @@ const UserTable = () => {
                                     </StyledOption>
                                   ))}
                                 </StyledSelect>
+                              </NeumorphicTableCell> */}
+                              <NeumorphicTableCell>
+                                <Select
+                                  value={pendingChanges[user.id]?.[' Estado ']?.selectRol || user[' Estado '].selectRol}
+                                  onChange={(e) => handleInputChange(e, 'selectRol', user.id)}
+                                >
+                                  <MenuItem value="ssss">Seleccione una roles</MenuItem>
+                                  {roles.map((role) => (
+                                    <MenuItem key={role.rolName} value={role.rolName}>
+                                      {role.rolName}
+                                    </MenuItem>
+                                  ))}
+                                </Select>
                               </NeumorphicTableCell>
                             </>
                           )}

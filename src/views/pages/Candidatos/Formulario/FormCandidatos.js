@@ -420,7 +420,7 @@ const TaxData = () => {
                   types={typesCuenta}
                   values={Object.values(cuentaFormValues)}
                   // values={Object.values(laboralFormValues || formData.Empresa, formData.Cargo, formData.InicioTrabajo, formData.Salario)}
-                  capitalization="primera"
+                  capitalization="minuscula"
                   onChange={(newValues) => {
                     setCuentaFormValues({ ...cuentaFormValues, ...newValues });
                     // setFormData({ ...formData, newValues });

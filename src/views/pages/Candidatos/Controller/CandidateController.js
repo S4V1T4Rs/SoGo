@@ -129,7 +129,8 @@ export const updateCandidate = async (docId, data, datafire) => {
         const newData = {
           'Datos Personales': datafire['Datos Personales'],
           'Datos Laborales': datafire['Datos Laborales'],
-          ' Cuenta ': datafire[' Cuenta ']
+          ' Cuenta ': datafire[' Cuenta '],
+          ' Estado ': datafire[' Estado ']
         };
         await updateDoc(doc(candidatesRef, docId), newData);
         console.log('Document successfully updated in Firestore');
