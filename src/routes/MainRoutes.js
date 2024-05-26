@@ -1,3 +1,4 @@
+//MainRoutes.js
 import { lazy } from 'react';
 
 // project imports
@@ -20,11 +21,11 @@ const SamplePage = Loadable(lazy(() => import('views/sample-page')));
 // ==============================|| MAIN ROUTING ||============================== //
 
 const MainRoutes = {
-  path: '/',
+  path: '/dashboard',
   element: <MainLayout />,
   children: [
     {
-      path: '/',
+      path: '/dashboard',
       element: <DashboardDefault />
     },
     // {

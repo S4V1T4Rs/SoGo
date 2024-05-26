@@ -1,3 +1,4 @@
+//AdminRoutes.js
 import { lazy } from 'react';
 
 // project imports
