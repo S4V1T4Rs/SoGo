@@ -1,3 +1,4 @@
+//menuItems.js
 import dashboard from './dashboard';
 import hhrr from './hhrr';
 import admin from './admin';

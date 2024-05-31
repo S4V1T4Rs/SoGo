@@ -152,7 +152,7 @@ const TaxData = () => {
   //   }
   // }, [connectionButtonClicked, message]);
 
-  //FormCaDos.js
+  //FormCandidatos.js
   const handleSubmit = async () => {
     try {
       // Referencia a la colección 'usuarios'

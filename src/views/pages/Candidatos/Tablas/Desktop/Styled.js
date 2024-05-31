@@ -59,7 +59,6 @@ export const SelectContainer = styled.div`
   align-items: center;
 `;
 
-
 // Estilo del componente select
 export const StyledSelect = styled.select`
   width: 100%;
@@ -71,7 +70,7 @@ export const StyledSelect = styled.select`
   background-color: #f9f9f9;
   &:focus {
     outline: none;
-    border-color: #007BFF;
+    border-color: #007bff;
   }
 `;
 
@@ -81,7 +80,7 @@ export const StyledOption = styled.option`
   background-color: red;
   color: #333;
   &:hover {
-    background-color: #007BFF;
+    background-color: #007bff;
     color: #fff;
   }
 `;

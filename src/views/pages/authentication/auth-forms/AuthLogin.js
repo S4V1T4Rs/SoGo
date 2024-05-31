@@ -112,9 +112,7 @@ const FirebaseLogin = ({ ...others }) => {
           </Box>
         </Grid>
         <Grid item xs={12} container alignItems="center" justifyContent="center">
-          <Box sx={{ mb: 2 }}>
-            {/* <Typography variant="subtitle1">Sign in with Email address</Typography> */}
-          </Box>
+          <Box sx={{ mb: 2 }}>{/* <Typography variant="subtitle1">Sign in with Email address</Typography> */}</Box>
         </Grid>
       </Grid>
 

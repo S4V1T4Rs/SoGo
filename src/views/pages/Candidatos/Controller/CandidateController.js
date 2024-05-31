@@ -1,13 +1,35 @@
-//fireController.js
-import { db } from 'api/config/configfire';
+//CandidateController.js.js
+import { auth, db } from 'api/config/configfire';
+
 // import { isDniInUse } from './validations';
 import { collection, deleteDoc, doc, getDocs, getDoc, setDoc, updateDoc } from '@firebase/firestore';
 // Make sure to import Firestore instance correctly from your configuration file
 import axios from 'axios';
+import { createUserWithEmailAndPassword } from 'firebase/auth';
 
 // Reference to the 'candidates' collection
 export const candidatesRef = collection(db, 'Candidato');
 
+
+
+export const getCandidates = async () => {
+  try {
+    const querySnapshot = await getDocs(candidatesRef);
+    const candidates = [];
+    const apiResponse = await axios.get(`http://localhost:8080/api/candidato`);
+    console.log('Response from API Update:', apiResponse.data);
+    querySnapshot.forEach((doc) => {
+      const candidateData = doc.data();
+      candidateData.id = doc.id;
+      candidates.push(candidateData);
+    });
+
+    return candidates;
+  } catch (error) {
+    console.error('Error getting documents:', error);
+    throw error;
+  }
+};
 export const createCandidates = async (
   data,
   setPersonalFormValues,
@@ -23,7 +45,9 @@ export const createCandidates = async (
       setMessageType('error');
       return;
     }
-
+    // Crear cuenta de usuario en Firebase Authentication
+    await createUserWithEmailAndPassword(auth, data.email, data.password);
+    console.log('User registered in Firebase Authentication successfully!');
     // const dniInUse = await isDniInUse(data.IDNumber, candidatesRef);
     // if (dniInUse) {
     //   setMessage('The ID number is already in use.');
@@ -98,26 +122,6 @@ export const createCandidates = async (
     throw error;
   }
 };
-
-export const getCandidates = async () => {
-  try {
-    const querySnapshot = await getDocs(candidatesRef);
-    const candidates = [];
-    const apiResponse = await axios.get(`http://localhost:8080/api/candidato`);
-    console.log('Response from API Update:', apiResponse.data);
-    querySnapshot.forEach((doc) => {
-      const candidateData = doc.data();
-      candidateData.id = doc.id;
-      candidates.push(candidateData);
-    });
-
-    return candidates;
-  } catch (error) {
-    console.error('Error getting documents:', error);
-    throw error;
-  }
-};
-
 export const updateCandidate = async (docId, data, datafire) => {
   try {
     const apiResponse = await axios.put(`http://localhost:8080/api/candidato/${docId}`, { ...data });

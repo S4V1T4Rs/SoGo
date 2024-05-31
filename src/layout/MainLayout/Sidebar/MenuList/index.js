@@ -1,30 +1,44 @@
-// material-ui
+//MenuList.js
+import { useSelector } from 'react-redux';
 import { Typography } from '@mui/material';
-
-// project imports
 import NavGroup from './NavGroup';
-import menuItem from 'menu-items';
 import MenuCard from '../MenuCard';
-
-// ==============================|| SIDEBAR MENU LIST ||============================== //
+import menuItems from 'menu-items';
 
 const MenuList = () => {
-  const navItems = menuItem.items.map((item) => {
-    switch (item.type) {
-      case 'group':
-        return <NavGroup key={item.id} item={item} />;
-      default:
-        return (
-          <Typography key={item.id} variant="h6" color="error" align="center">
-            Menu Items Error
-          </Typography>
-        );
-    }
-  });
+  const users = useSelector((state) => state.auth.user);
+
+  // Verificar si hay usuarios y si al menos uno tiene la propiedad 'Estado' y 'selectRol'
+  const currentUser = users.find((user) => user[' Estado '] && user[' Estado '].selectRol);
+
+  if (!currentUser) {
+    return (
+      <Typography variant="h6" color="error" align="center">
+        Usuario no autenticado o información del rol no disponible
+      </Typography>
+    );
+  }
+
+  const roles = currentUser[' Estado '].selectRol;
+
+  console.log('El valor de selectRol es:', roles); // Agregar este console.log para mostrar el valor de selectRol
+
+  let navItems = [];
+
+  if (roles === 'Administrador') {
+    navItems = menuItems.items
+      .filter((item) => ['admins', 'hhrr', 'cuenta'].includes(item.id))
+      .map((item) => <NavGroup key={item.id} item={item} />);
+  }
+
+  if (roles === 'Candidato') {
+    navItems = menuItems.items.filter((item) => item.id === 'cuenta').map((item) => <NavGroup key={item.id} item={item} />);
+  }
 
   return (
     <>
-      {navItems} <MenuCard />
+      {navItems}
+      <MenuCard />
     </>
   );
 };

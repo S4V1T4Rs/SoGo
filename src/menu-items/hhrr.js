@@ -1,3 +1,4 @@
+//hhrr.js
 import { IconUserCheck } from '@tabler/icons-react';
 
 const icons = {
@@ -7,7 +8,7 @@ const icons = {
 // ==============================|| EXTRA PAGES MENU ITEMS ||============================== //
 
 const hhrr = {
-  id: 'user-management',
+  id: 'hhrr',
   title: 'Gestion HH.RR',
   caption: 'Gestion de Usuarios',
   type: 'group',
