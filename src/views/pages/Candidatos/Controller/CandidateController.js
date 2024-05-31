@@ -1,12 +1,20 @@
+<<<<<<< HEAD
 //CandidateController.js.js
 import { auth, db } from 'api/config/configfire';
 
+=======
+//fireController.js
+import { auth, db } from 'api/config/configfire';
+>>>>>>> 4804d7f21c158ca5e79d411f40140c568df2e067
 // import { isDniInUse } from './validations';
 import { collection, deleteDoc, doc, getDocs, getDoc, setDoc, updateDoc } from '@firebase/firestore';
 // Make sure to import Firestore instance correctly from your configuration file
 import axios from 'axios';
 import { createUserWithEmailAndPassword } from 'firebase/auth';
+<<<<<<< HEAD
 
+=======
+>>>>>>> 4804d7f21c158ca5e79d411f40140c568df2e067
 // Reference to the 'candidates' collection
 export const candidatesRef = collection(db, 'Candidato');
 
