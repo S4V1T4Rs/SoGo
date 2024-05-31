@@ -1,11 +1,7 @@
 // authReducer.js
-// const initialState = {
-//   isAuthenticated: !!localStorage.getItem('authToken'),
-//   user: JSON.parse(localStorage.getItem('user')) || null
-// };
 const initialState = {
   isAuthenticated: !!localStorage.getItem('authToken'),
-  user: JSON.parse(localStorage.getItem('user')) || { roles: [] } // Estructura básica con un array de roles
+  user: JSON.parse(localStorage.getItem('user')) || null
 };
 
 const authReducer = (state = initialState, action) => {

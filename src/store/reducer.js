@@ -4,6 +4,7 @@ import { combineReducers } from 'redux';
 import customizationReducer from './customizationReducer';
 import authReducer from './authReducer';
 
+
 // ==============================|| COMBINE REDUCER ||============================== //
 
 const reducer = combineReducers({
