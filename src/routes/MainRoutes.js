@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-//MainRoutes
-=======
-//MainRoutes.js
->>>>>>> 4804d7f21c158ca5e79d411f40140c568df2e067
 import { lazy } from 'react';
 
 // project imports
